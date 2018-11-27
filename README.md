@@ -1,3 +1,3 @@
-# web-development-backend-projects
+# web-development-back-end-projects
 
-Node.js / Express / MongoDB / Mongoose / Django Back-end Projects by Niccolo Lampa
+Node.js / Express / MongoDB / Mongoose / Django. Back end projects by Niccolo Lampa

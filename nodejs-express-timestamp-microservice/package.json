@@ -1,0 +1,24 @@
+{
+  "name": "nodejs-express-timestamp-microservice",
+  "version": "1.0.0",
+  "description": "returns a JSON timestamp",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niccololampa/web-development-back-end-projects/tree/master/nodejs-express-timestamp-microservice"
+  },
+  "keywords": [
+    "node.js",
+    "express",
+    "timestamp"
+  ],
+  "author": "Niccolo Lampa",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "body-parser": "1.18.3"
+  }
+}

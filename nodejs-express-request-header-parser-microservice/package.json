@@ -1,52 +1,23 @@
 {
   "name": "nodejs-express-request-header-parser-microservice",
   "version": "1.0.0",
-  "description": "returns a JSON with user's  ip address, language and software",
+  "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/index.js localhost 8080"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niccololampa/web-development-back-end-projects/tree/master/nodejs-express-request-header-parser-microservice"
   },
   "keywords": [
     "node.js",
-    "express",
-    "header-parser",
-    "microservice"
+    "express"
   ],
   "author": "Niccolo Lampa",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
     "express": "^4.16.4"
   },
-  "devDependencies": {
-    "eslint": "^5.9.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0"
-  },
-  "eslintConfig": {
-    "extends": "airbnb-base",
-    "env": {
-      "es6": true,
-      "browser": true
-    },
-    "rules": {
-      "brace-style": [
-        "error",
-        "stroustrup"
-      ],
-      "comma-dangle": [
-        "error",
-        "never"
-      ],
-      "no-unused-vars": [
-        "warn"
-      ],
-      "no-var": [
-        "off"
-      ],
-      "one-var": [
-        "off"
-      ]
-    }
-  }
+  "devDependencies": {}
 }

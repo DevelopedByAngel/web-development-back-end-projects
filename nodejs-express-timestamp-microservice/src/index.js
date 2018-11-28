@@ -38,7 +38,7 @@ app.use(express.static(__dirname + '/styling'));
 app.use('/', bodyParser.urlencoded({ extended: false }));
 
 // get projectInfo for home page
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
   res.sendFile(__dirname + '/project-info.html');
 });
 

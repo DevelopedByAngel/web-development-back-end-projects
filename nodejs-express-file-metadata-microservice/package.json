@@ -15,6 +15,7 @@
   "author": "Niccolo Lampa",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "multer": "^1.4.1"
   }
 }

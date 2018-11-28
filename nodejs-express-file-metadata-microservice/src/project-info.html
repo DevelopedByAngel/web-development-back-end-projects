@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Node.js & Express File Metadata Microservice</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="title">
+      <h1>Node.js & Express File Metadata Microservice</h1>
+    </div>
+    <div class="Try It Out">
+      <h2>TRY IT OUT</h2>
+      <form
+        method="POST"
+        action="/api/fileinfo"
+        target="_blank"
+        rel="noopener noreferrer"
+        enctype="multipart/form-data"
+      >
+        <div class="input-area"><input type="file" name="upfile" /></div>
+        <div class="submit-area">
+          <input class="submit-button" type="submit" value="Upload File" />
+        </div>
+      </form>
+    </div>
+
+    <div class="project-details">
+      <h2>DETAILS</h2>
+
+      <li>
+        This project returns a JSON detailing a file upload's file name, file
+        type and size
+      </li>
+
+      <h2>EXAMPLE OUTPUT</h2>
+      <p class="example-result">
+        {"filename":"README.md","type":""application/octet-stream"",
+        "size":"121"}
+      </p>
+    </div>
+
+    <div class="author">
+      <h2>AUTHOR</h2>
+      <p>Coded by: Niccolo Lampa</p>
+      <p>Email: niccololampa@gmail.com</p>
+      <p>For Node.js and Express demo purposes only</p>
+    </div>
+  </body>
+</html>

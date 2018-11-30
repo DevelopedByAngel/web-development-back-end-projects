@@ -1,0 +1,23 @@
+{
+  "name": "mongo-express-node-url-shortener-microservice",
+  "version": "1.0.0",
+  "description": "Provide a shortened link",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mongo",
+    "express",
+    "node",
+    "mongoose",
+    "url",
+    "shortener"
+  ],
+  "author": "Niccolo Lampa",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongoose": "^5.3.14"
+  }
+}

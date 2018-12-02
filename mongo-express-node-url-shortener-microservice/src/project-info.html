@@ -8,17 +8,17 @@
   </head>
 
   <body>
-    <div class="title"><h1>Node.js & Express Timestamp Microservice</h1></div>
+    <div class="title"><h1>Mongo & Express URL Shortener Microservice</h1></div>
     <div class="Try It Out">
       <h2>TRY IT OUT</h2>
-      <form id="urlInputForm" method="POST" onsubmit="urlCreator()">
+      <form id="urlInputForm" method="POST" action="/api/shorturl/" )>
         <div class="input-area">
-          [root_url]/api/timestamp/
+          Insert url here
           <input
             name="urlInput"
             type="text"
             name="date"
-            placeholder="type date here"
+            placeholder="www.yourlink.com"
           />
         </div>
         <div class="submit-area">
@@ -30,22 +30,22 @@
     <div class="project-details">
       <h2>DETAILS</h2>
 
-      <li>This project returns a JSON timestamp at the API endpoint:</li>
-      <p class="example-result">GET [root_url]/api/timestamp/:date_string?</p>
+      <li>Submit a valid URL in the form above.</li>
       <li>
-        For a valid date string, the api returns a JSON having the structure:
+        For a valid url the api returns a JSON with the original url and the
+        shortened URL:
       </li>
       <p class="example-result">
-        {"unix": &ltdate in unix&gt ,"utc": &ltdate in utc&gt}
+        {"original_url": "www.exampleUrl.com" ,"short_url":
+        "root_url/api/shorturl/ex"}
       </p>
-
       <li>
-        For an invalid dates string, the api returns a JSON having the
-        structure:
+        Clicking on the url link will redirect you to the same website as the
+        original link
       </li>
-      <p class="example-result">{"unix": null, "utc" : "Invalid Date" }</p>
 
-      <li>If no date is provided it returns a JSON having the current date.</li>
+      <li>Providing an invalid URL will return the following JSON:</li>
+      <p class="example-result">{"error": "invalid URL" }</p>
     </div>
 
     <div class="example">

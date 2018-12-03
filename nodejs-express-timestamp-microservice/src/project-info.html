@@ -11,15 +11,10 @@
     <div class="title"><h1>Node.js & Express Timestamp Microservice</h1></div>
     <div class="Try It Out">
       <h2>TRY IT OUT</h2>
-      <form id="urlInputForm" method="POST" onsubmit="urlCreator()">
+      <form id="dateInputForm" method="POST" onsubmit="urlCreator()">
         <div class="input-area">
           [root_url]/api/timestamp/
-          <input
-            name="urlInput"
-            type="text"
-            name="date"
-            placeholder="type date here"
-          />
+          <input type="text" name="dateInput" placeholder="type date here" />
         </div>
         <div class="submit-area">
           <input class="submit-button" type="submit" value="Submit" />
@@ -101,8 +96,8 @@
   <script>
     function urlCreator() {
       var action_src =
-        '/api/timestamp/' + document.getElementsByName('urlInput')[0].value;
-      var url_form = document.getElementById('urlInputForm');
+        '/api/timestamp/' + document.getElementsByName('dateInput')[0].value;
+      var url_form = document.getElementById('dateInputForm');
       url_form.target = '_blank';
       url_form.rel = 'noopener noreferrer';
       url_form.action = action_src;

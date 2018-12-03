@@ -1,7 +1,7 @@
 {
   "name": "mongo-express-node-url-shortener-microservice",
   "version": "1.0.0",
-  "description": "Provide a shortened link",
+  "description": "Provides a shortened URL link",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -24,5 +24,9 @@
   },
   "devDependencies": {
     "dotenv": "^6.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niccololampa/web-development-back-end-projects/tree/master/mongo-express-node-url-shortener-microservice"
   }
 }

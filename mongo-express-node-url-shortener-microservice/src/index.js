@@ -137,6 +137,8 @@ app.get('/a/:urlInput', (req, res) => {
   });
 });
 
+/*Coded by Niccolo Lampa. Email: niccololampa@gmail.com */
+
 // (DISREGARD) NOTES SCRATCH PURPOSES ONLY FOR FUTURE REFERENCE
 
 // app.get('/test', (req, res) => {
@@ -171,5 +173,3 @@ app.get('/a/:urlInput', (req, res) => {
 // });
 
 // app.get('/test2', (req, res) => {});
-
-/*Coded by Niccolo Lampa. Email: niccololampa@gmail.com */

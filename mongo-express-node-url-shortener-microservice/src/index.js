@@ -15,28 +15,53 @@ var Schema = mongoose.Schema;
 
 app.listen(8080);
 
-mongoose.connect(
+const connection = mongoose.connect(
   process.env.MONGO_URI,
   { useNewUrlParser: true }
 );
 
-//Serving static assets
+//SERVING STATIC ASSETS
 app.use(express.static(__dirname + '/styling'));
 
-//to ready for post-request
+//GETTING READY FOR POST REQUEST
 app.use('/', bodyParser.urlencoded({ extended: false }));
 
-// get projectInfo for home page
+// GET PROJECT INFO
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/project-info.html');
 });
 
-// create model schema
-const urlSchema = new Schema({
-  original_url: { type: String, required: true }
+// CREATE  A COUNTER SCHEMA
+const counterSchema = new Schema({
+  _id: { type: String, required: true },
+  current_count: Number
 });
 
-// upload to server
+const Counters = mongoose.model('Counters', counterSchema);
+
+// CREATE URL MODEL SCHEMA
+// include count_id doing this is better than modifying mongoose generated id.
+const urlSchema = new Schema({
+  original_url: { type: String, required: true },
+  count_id: { type: Number }
+});
+
+// PRE WILL RUN BEFORE SAVING A NEW URLSCHEMA DOCUMENT
+// THis will insert a unique count_id based on counters model
+urlSchema.pre('save', function(next) {
+  var doc = this;
+  Counters.findByIdAndUpdate(
+    { _id: 'count_status' },
+    { $inc: { current_count: 1 } },
+    function(err, data) {
+      if (err) return next(err);
+      doc.count_id = data.current_count;
+      next();
+    }
+  );
+});
+
+// upload to Urls Model to server
 const Urls = mongoose.model('Urls', urlSchema);
 
 // FUNCTION TO CHECK IF URL IS VALID
@@ -59,32 +84,48 @@ app.post('/api/shorturl/', (req, res) => {
     return res.json({ error: 'invalid URL' });
   }
 
-  // Upload submitted URL to Mongo database if url is valid
-  Urls.create({ original_url: urlProvided }),
-    (err, data) => {
-      if (err) return handleError(err);
-    };
+  // Chekc if url is already in the database
 
-  // Once uploaded find the system generated ID of url. This will be used as the shortened url.
   Urls.findOne({ original_url: urlProvided }, (err, data) => {
-    if (err) return handleError(err);
-
+    // if data is in database
     if (data) {
-      let id = data._id.toString();
-      let shorturl = req.get('host') + '/api/' + id;
-      const output = { original_url: urlProvided, short_url: shorturl };
-      // return processed
-      res.json(output);
+      let id = data.count_id.toString();
+      let shorturl = req.get('host') + '/a/' + id;
+      return res.send({ original_url: urlProvided, short_url: shorturl });
+    }
+    // if not create in database
+    else {
+      console.log('creating database ');
+
+      // Upload submitted URL to Mongo database if url is valid
+      const urlUploaded = new Urls({ original_url: urlProvided });
+      urlUploaded.save((err, data) => {
+        if (err) return console.log(err);
+        else {
+          // Once uploaded find the system generated ID of url. This will be used as the shortened url.
+          Urls.findOne({ original_url: urlProvided }, (err, data) => {
+            if (err) return console.log(err);
+
+            if (data) {
+              let id = data.count_id.toString();
+              let shorturl = req.get('host') + '/a/' + id;
+              const output = { original_url: urlProvided, short_url: shorturl };
+              // return processed
+              res.json(output);
+            }
+          });
+        }
+      });
     }
   });
 });
 
 // SHORT URL REDIRECTING TO ORIGINAL URL
-app.get('/api/:urlInput', (req, res) => {
-  const personId = req.params.urlInput;
-  Urls.findById(personId, (err, data) => {
+app.get('/a/:urlInput', (req, res) => {
+  const urlInput = req.params.urlInput;
+  Urls.findOne({ count_id: urlInput }, (err, data) => {
     if (err) {
-      return handleError(err);
+      return console.log(err);
     }
 
     if (data) {
@@ -96,6 +137,39 @@ app.get('/api/:urlInput', (req, res) => {
   });
 });
 
-/*Coded by Niccolo Lampa. Email: niccololampa@gmail.com */
+// (DISREGARD) NOTES SCRATCH PURPOSES ONLY FOR FUTURE REFERENCE
 
-// localhost:8080/api/5c0286cdf0ab716df9eaaf40
+// app.get('/test', (req, res) => {
+// Counters.findOne({ _id: 'count_status' }, (err, data) => {
+//   if (err) {
+//     console.log('there is an error');
+//     return console.log(err);s
+//   }
+//   if (data) {
+//     const current_count = data.current_count;
+//     console.log(current_count);
+//     res.send('Counter is currently ' + current_count);
+//   }
+// });
+// console.log(connection.getCollection('counters'));
+// Counters.findOneAndUpdate(
+//   { _id: 'count_status' },
+//   { $inc: { current_count: 1 } },
+//   { new: true },
+//   function(err, data) {
+//     if (err) {
+//       callback(err);
+//     } else {
+//       console.log(data.current_count);
+//     }
+//   }
+// );
+// Counters.create({ _id: 'count_status', current_count: 1 }),
+//   (err, data) => {
+//     if (err) return console.log(err);
+//   };
+// });
+
+// app.get('/test2', (req, res) => {});
+
+/*Coded by Niccolo Lampa. Email: niccololampa@gmail.com */

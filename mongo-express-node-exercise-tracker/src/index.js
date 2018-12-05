@@ -3,6 +3,10 @@
 /* PREVIEW MODE DOESN'T SHOW ALL FEATURES */
 /* Run on http://localhost:8080/ after node index.js */
 
+// https://fuschia-custard.glitch.me/api/exercise/log?userId=rkGiwsQ14
+
+// https://fuschia-custard.glitch.me/api/exercise/add
+
 // for environment variables
 require('dotenv/config');
 
@@ -31,145 +35,153 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/project-info.html');
 });
 
-// CREATE  A COUNTER SCHEMA
-const counterSchema = new Schema({
-  _id: { type: String, required: true },
-  current_count: Number
+// ------------------------------------------------------------------------------------------
+// CREATE LOG SCHEMA
+
+const LogSchema = new Schema({
+  description: { type: String },
+  duration: { type: Number },
+  date: { type: Date }
 });
 
-const Counters = mongoose.model('Counters', counterSchema);
-
-// CREATE URL MODEL SCHEMA
-// include count_id doing this is better than modifying mongoose generated id.
-const urlSchema = new Schema({
-  original_url: { type: String, required: true },
-  count_id: { type: Number }
+// ------------------------------------------------------------------------------------------
+// CREATE  EXERCISE SCHEMA
+const UsersSchema = new Schema({
+  username: { type: String, required: true },
+  logs: { type: [LogSchema] }
 });
 
-// PRE WILL RUN BEFORE SAVING A NEW URLSCHEMA DOCUMENT
-// THis will insert a unique count_id based on counters model
-urlSchema.pre('save', function(next) {
-  var doc = this;
-  Counters.findByIdAndUpdate(
-    { _id: 'count_status' },
-    { $inc: { current_count: 1 } },
-    function(err, data) {
-      if (err) return next(err);
-      doc.count_id = data.current_count;
-      next();
-    }
-  );
-});
+const Users = mongoose.model('Users', UsersSchema);
 
-// upload to Urls Model to server
-const Urls = mongoose.model('Urls', urlSchema);
+// ------------------------------------------------------------------------------------------
+// CREATE A FUNCTION TO VALIDATE IF USERNAME IS VALID
 
-// FUNCTION TO CHECK IF URL IS VALID
-function validateUrl(url) {
-  var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-  if (pattern.test(url)) {
-    return true;
-  }
-  return false;
-}
+const checkNewUser = newuserInput => {
+  return /\s/.test(newuserInput);
+};
 
-//  PROCESS POST REQUEST. WHEN URL IS SUBMITTED
-app.post('/api/shorturl/', (req, res) => {
-  // get the url provided in form
-  let urlProvided = req.body.urlInput;
-  let id = null;
+// ------------------------------------------------------------------------------------------
+// CREATE NEW USER REQUEST
+app.post('/api/exercise/new-user', (req, res) => {
+  // get the username provided in the form
+  const { newUserInput } = req.body;
 
-  // Check validty of url. If  is not valid
-  if (validateUrl(urlProvided) === false) {
-    return res.json({ error: 'invalid URL' });
+  // check if username is valid
+  userStatus = checkNewUser(newUserInput);
+  if (userStatus) {
+    res.send('No spaces allowed in username');
+    return;
   }
 
-  // Chekc if url is already in the database
+  // if username is valid then upload to new User to database
+  const newUser = new Users({ username: newUserInput });
+  newUser.save(err => {
+    if (err) return console.error(err);
+    res.send({ username: newUserInput });
+  });
+});
 
-  Urls.findOne({ original_url: urlProvided }, (err, data) => {
-    // if data is in database
+// ------------------------------------------------------------------------------------------
+// CREATE NEW EXERCISE FOR THE USER
+
+app.post('/api/exercise/add', (req, res) => {
+  // get the data submitted in the form
+  const { usernameInput, descInput, durationInput, dateInput } = req.body;
+
+  // create exercise data object to be pushed to the user model.
+  const exerciseData = {
+    description: descInput,
+    duration: durationInput,
+    date: new Date(dateInput)
+  };
+
+  // find username
+  Users.findOne({ username: usernameInput }, (err, data) => {
+    // if existing update
     if (data) {
-      let id = data.count_id.toString();
-      let shorturl = req.get('host') + '/a/' + id;
-      return res.send({ original_url: urlProvided, short_url: shorturl });
-    }
-    // if not create in database
-    else {
-      console.log('creating database ');
-
-      // Upload submitted URL to Mongo database if url is valid
-      const urlUploaded = new Urls({ original_url: urlProvided });
-      urlUploaded.save((err, data) => {
-        if (err) return console.log(err);
-        else {
-          // Once uploaded find the system generated ID of url. This will be used as the shortened url.
-          Urls.findOne({ original_url: urlProvided }, (err, data) => {
-            if (err) return console.log(err);
-
-            if (data) {
-              let id = data.count_id.toString();
-              let shorturl = req.get('host') + '/a/' + id;
-              const output = { original_url: urlProvided, short_url: shorturl };
-              // return processed
-              res.json(output);
-            }
-          });
-        }
+      data.logs.push(exerciseData);
+      data.save(err => {
+        if (err) return console.error(err);
+        res.send(exerciseData);
       });
+    } else {
+      // if not existing in database
+      res.send('Username does not exist');
     }
   });
 });
 
-// SHORT URL REDIRECTING TO ORIGINAL URL
-app.get('/a/:urlInput', (req, res) => {
-  const urlInput = req.params.urlInput;
-  Urls.findOne({ count_id: urlInput }, (err, data) => {
-    if (err) {
-      return console.log(err);
-    }
+// ------------------------------------------------------------------------------------------
+// QUERY THE DATABASE FOR RECORD
+app.get('/api/exercise/log?', (req, res) => {
+  let { usernameInput, dateStartInput, dateEndInput } = req.query;
 
+  // get user name document
+  Users.findOne({ username: usernameInput }, (err, data) => {
+    // if existing get data
     if (data) {
-      const orgUrl = data.original_url;
+      // extract logs array
+      const logs = data.logs;
 
-      // redirect must include 301 request and http://
-      res.redirect(301, orgUrl);
+      // if user did not provide both dates return first 10 logs
+      if (dateStartInput === '' && dateEndInput === '') {
+        res.send({ username: usernameInput, logs: logs.slice(0, 10) });
+      }
+      // if provided either start date or end date
+      else {
+        // if no start date provided then set to earliest date possilbe
+        if (dateStartInput === '') {
+          dateStartInput = new Date(1970 - 01 - 01);
+        }
+
+        // if no end date provided set to latest date
+        if (dateEndInput === '') {
+          dateEndInput = new Date();
+        }
+
+        // then go Filter array by date
+        let filteredLogs = logs.filter(exerciseLog => {
+          return (
+            exerciseLog.date >= new Date(dateStartInput) &&
+            exerciseLog.date <= new Date(dateEndInput)
+          );
+        });
+
+        // limit results to first 10 results;
+        res.send({ username: usernameInput, logs: filteredLogs.slice(0, 10) });
+      }
+    }
+    // if user is not in database
+    else {
+      res.send('Username does not exist');
     }
   });
 });
 
-/*Coded by Niccolo Lampa. Email: niccololampa@gmail.com */
-
-// (DISREGARD) NOTES SCRATCH PURPOSES ONLY FOR FUTURE REFERENCE
+// ------------------------------------------------------------------------------------------
+// NOTES DISREGARD
 
 // app.get('/test', (req, res) => {
-// Counters.findOne({ _id: 'count_status' }, (err, data) => {
-//   if (err) {
-//     console.log('there is an error');
-//     return console.log(err);s
-//   }
-//   if (data) {
-//     const current_count = data.current_count;
-//     console.log(current_count);
-//     res.send('Counter is currently ' + current_count);
-//   }
-// });
-// console.log(connection.getCollection('counters'));
-// Counters.findOneAndUpdate(
-//   { _id: 'count_status' },
-//   { $inc: { current_count: 1 } },
-//   { new: true },
-//   function(err, data) {
-//     if (err) {
-//       callback(err);
+//   Users.findOne({ username: 'second' }, (err, data) => {
+//     // if existing update
+//     if (data) {
+//       res.send(data.date);
 //     } else {
-//       console.log(data.current_count);
+//       // if not existing in database
+//       res.send('User not existing');
 //     }
-//   }
-// );
-// Counters.create({ _id: 'count_status', current_count: 1 }),
-//   (err, data) => {
-//     if (err) return console.log(err);
-//   };
+//   });
 // });
 
-// app.get('/test2', (req, res) => {});
+// query database
+// Users.find({
+//   'logs.date': {
+//     $gte: new Date(dateStartInput)
+//     // $lte: new Date(dateEndInput)
+//   },
+//   username: usernameInput
+// }).exec((err, data) => {
+//   if (data) {
+//     res.send(data);
+//   }
+// });

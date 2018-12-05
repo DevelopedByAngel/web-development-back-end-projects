@@ -3,34 +3,111 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mongo & Express URL Shortener Microservice</title>
+    <title>Mongo & Express Exercise Tracker Database</title>
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <div class="title">
-      <h1>MongoDB, Mongoose & Express URL Shortener Microservice</h1>
-    </div>
+    <div class="title"><h1>Mongo & Express Exercise Tracker Database</h1></div>
     <div class="Try It Out">
       <h2>TRY IT OUT</h2>
-      <form
-        id="urlInputForm"
-        method="POST"
-        action="/api/shorturl/"
-        target="_blank"
-        rel="noopener noreferrer"
-        )
-      >
-        <div class="input-area">
-          Insert url here (http:// required)
-          <input name="urlInput" placeholder="http://www.yourlink.com" />
+      <div class="form-area">
+        <div class="input-column">
+          <form
+            id="urlInputForm"
+            method="POST"
+            action="/api/exercise/new-user"
+            target="_blank"
+            rel="noopener noreferrer"
+            )
+          >
+            <div class="input-area">
+              Create New User <br />
+              <input
+                type="text"
+                name="newUserInput"
+                placeholder="username"
+                required
+              />
+            </div>
+            <div class="submit-area">
+              <input class="submit-button" type="submit" value="Submit" />
+            </div>
+          </form>
         </div>
-        <div class="submit-area">
-          <input class="submit-button" type="submit" value="Submit" />
+        <div class="input-column">
+          <form
+            id="addExerciseForm"
+            method="POST"
+            action="/api/exercise/add"
+            target="_blank"
+            rel="noopener noreferrer"
+            )
+          >
+            <div class="input-area">
+              Add Exercises<br />
+              <input
+                type="text"
+                name="usernameInput"
+                placeholder="username"
+                required
+              />
+              <br />
+              <input type="text" name="descInput" placeholder="description" />
+              <br />
+              <input
+                type="number"
+                name="durationInput"
+                placeholder="duration mins"
+              />
+              <br />
+              <input
+                type="date"
+                name="dateInput"
+                placeholder="yyyy-mm-dd"
+                required
+              />
+              <br />
+            </div>
+            <div class="submit-area">
+              <input class="submit-button" type="submit" value="Submit" />
+            </div>
+          </form>
         </div>
-      </form>
+        <div class="input-column">
+          <form
+            id="getRecordForm"
+            method="GET"
+            action="/api/exercise/log?"
+            target="_blank"
+            rel="noopener noreferrer"
+            )
+          >
+            <div class="input-area">
+              Get Exercise Log <br />
+              <input
+                type="text"
+                name="usernameInput"
+                placeholder="username"
+                required
+              />
+              <br />
+              <input
+                type="date"
+                name="dateStartInput"
+                placeholder="yyyy-mm-dd"
+              />
+              <br />
+              <input type="date" name="dateEndInput" placeholder="yyyy-mm-dd" />
+              <br />
+            </div>
+            <div class="submit-area">
+              <input class="submit-button" type="submit" value="Submit" />
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-
     <div class="project-details">
       <h2>DETAILS</h2>
 

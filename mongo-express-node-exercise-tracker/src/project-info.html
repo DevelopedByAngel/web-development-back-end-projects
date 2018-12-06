@@ -3,13 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mongo & Express Exercise Tracker Database</title>
+    <title>MongoDB & Express Exercise Tracker Database</title>
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <div class="title"><h1>Mongo & Express Exercise Tracker Database</h1></div>
-    <div class="Try It Out">
+    <div class="title">
+      <h1>MongoDB & Express Exercise Tracker Database</h1>
+    </div>
+    <div class="try-it-out">
       <h2>TRY IT OUT</h2>
       <div class="form-area">
         <div class="input-column">
@@ -22,16 +24,13 @@
             )
           >
             <div class="input-area">
-              Create New User <br />
-              <input
-                type="text"
-                name="newUserInput"
-                placeholder="username"
-                required
-              />
+              <h3>Create New User</h3>
+              <br />
+              <label for="newUserInput">Username</label> <br />
+              <input type="text" name="newUserInput" required /><br /><br />
             </div>
             <div class="submit-area">
-              <input class="submit-button" type="submit" value="Submit" />
+              <input class="submit-button" type="submit" value="Register" />
             </div>
           </form>
         </div>
@@ -45,32 +44,20 @@
             )
           >
             <div class="input-area">
-              Add Exercises<br />
-              <input
-                type="text"
-                name="usernameInput"
-                placeholder="username"
-                required
-              />
+              <h3>Exercises</h3>
               <br />
-              <input type="text" name="descInput" placeholder="description" />
-              <br />
-              <input
-                type="number"
-                name="durationInput"
-                placeholder="duration mins"
-              />
-              <br />
-              <input
-                type="date"
-                name="dateInput"
-                placeholder="yyyy-mm-dd"
-                required
-              />
-              <br />
+              <label for="usernameInput">Username</label> <br />
+              <input type="text" name="usernameInput" required /> <br /><br />
+              <label for="descInput">Description</label> <br />
+              <input type="text" name="descInput" /> <br /><br />
+              <label for="durationInput">Duration (mins)</label> <br />
+              <input type="number" name="durationInput" min="0" /> <br /><br />
+              <label for="dateInput">Workout</label> <br />
+              <input type="date" id="recDate" name="dateInput" required />
+              <br /><br />
             </div>
             <div class="submit-area">
-              <input class="submit-button" type="submit" value="Submit" />
+              <input class="submit-button" type="submit" value="Upload" />
             </div>
           </form>
         </div>
@@ -84,25 +71,18 @@
             )
           >
             <div class="input-area">
-              Get Exercise Log <br />
-              <input
-                type="text"
-                name="usernameInput"
-                placeholder="username"
-                required
-              />
+              <h3>Get Exercise Log</h3>
               <br />
-              <input
-                type="date"
-                name="dateStartInput"
-                placeholder="yyyy-mm-dd"
-              />
-              <br />
-              <input type="date" name="dateEndInput" placeholder="yyyy-mm-dd" />
-              <br />
+              <label for="usernameInput">Username</label> <br />
+              <input type="text" name="usernameInput" required /> <br /><br />
+              <label for="dateStartInput">Start Date</label> <br />
+              <input type="date" id="start" name="dateStartInput" max="" />
+              <br /><br />
+              <label for="dateInput">End Date</label> <br />
+              <input type="date" id="end" name="dateEndInput" /> <br /><br />
             </div>
             <div class="submit-area">
-              <input class="submit-button" type="submit" value="Submit" />
+              <input class="submit-button" type="submit" value="Get Log" />
             </div>
           </form>
         </div>
@@ -111,37 +91,34 @@
     <div class="project-details">
       <h2>DETAILS</h2>
 
-      <li>Submit a valid URL in the form above.</li>
+      <li>Register a username.</li>
       <li>
-        For a valid url the api returns a JSON with the original url and the
-        shortened URL:
-      </li>
-      <p class="example-result">
-        {"original_url": "http://www.exampleUrl.com" ,"short_url":
-        "root_url/a/addlurl"}
-      </p>
-      <li>
-        Clicking on the url link will redirect you to the same website as the
-        original link
+        Once username is registered exercises can be uploaded to the database.
       </li>
 
-      <li>Providing an invalid URL will return the following JSON:</li>
-      <p class="example-result">{"error": "invalid URL" }</p>
+      <li>
+        User can get the JSON record of exercise logs (max 10 records per
+        query).
+      </li>
+
+      <li>JSON output is sorted by date. Latest date first.</li>
     </div>
 
     <div class="example">
-      <h2>EXAMPLE (click on the link)</h2>
-
-      <li>Sample Input</li>
-      <p>http://www.google.com</p>
-      <li>Sample JSON Output</li>
-      <p>
-        {"original_url": "http://www.google.com" ,"short_url": "root_url/a/1"}
-      </p>
-      <li>Sample Working Link</li>
-      <a href="/a/1" target="_blank" rel="noopener noreferrer"
-        >[root_url]/a/1
+      <h2>EXAMPLE JSON LOG OUTPUT</h2>
+      <li>Click on link</li>
+      <a
+        href="/api/exercise/log?usernameInput=test&dateStartInput=&dateEndInput="
+        target="_blank"
+        s
+        rel="noopener noreferrer"
+        >[root_url]/api/exercise/log?usernameInput=test&dateStartInput=&dateEndInput=
       </a>
+
+      <li>JSON output</li>
+      <p>
+        {"username":"test","logs":[{"description":"surfing","duration":160,"date":"2018-12-05"},{"description":"boxing","duration":80,"date":"2018-11-16"},{"description":"running","duration":20,"date":"2018-10-09"}]}
+      </p>
     </div>
 
     <div class="author">
@@ -151,4 +128,43 @@
       <p>For MongoDB, Mongoose, Express and NodeJS demo purposes only</p>
     </div>
   </body>
+  <script>
+    // SETTING THE CURRENT DATE AS MAX
+
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1; //January is 0!
+    let yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+
+    today = yyyy + '-' + mm + '-' + dd;
+    document.getElementById('start').setAttribute('max', today);
+    document.getElementById('end').setAttribute('max', today);
+    document.getElementById('recDate').setAttribute('max', today);
+
+    // -------------------------------------------------------------------
+    // FOR START DATE  <  END DATE VALIDATION
+    let start = document.getElementById('start');
+    let end = document.getElementById('end');
+
+    start.addEventListener(
+      'change',
+      function() {
+        if (start.value) end.min = start.value;
+      },
+      false
+    );
+    end.addEventLiseter(
+      'change',
+      function() {
+        if (end.value) start.max = end.value;
+      },
+      false
+    );
+  </script>
 </html>

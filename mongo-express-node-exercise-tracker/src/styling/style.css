@@ -14,15 +14,38 @@ h2 {
   margin: 30px 0 10px 0;
 }
 
+h3 {
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .form-area {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+form {
+  margin: 20px 20px 20px 20px;
 }
 
 .input-area {
   font-weight: bold;
 }
+
+label {
+  margin: 100px 100px;
+}
 input {
   font-size: inherit;
+  width: 230px;
+  margin: auto;
+  /* text-align: center; */
+}
+
+::-webkit-datetime-edit-text {
+  text-align: center;
 }
 
 .submit-button {

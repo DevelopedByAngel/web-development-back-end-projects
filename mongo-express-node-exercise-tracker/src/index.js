@@ -63,7 +63,7 @@ app.post('/api/exercise/new-user', (req, res) => {
   const { newUserInput } = req.body;
 
   // check if username is valid
-  userStatus = checkNewUser(newUserInput);
+  let userStatus = checkNewUser(newUserInput);
   if (userStatus) {
     res.send('No spaces allowed in username');
     return;
@@ -173,3 +173,4 @@ app.get('/api/exercise/log?', (req, res) => {
       }
     });
 });
+/*Coded by Niccolo Lampa. Email: niccololampa@gmail.com */

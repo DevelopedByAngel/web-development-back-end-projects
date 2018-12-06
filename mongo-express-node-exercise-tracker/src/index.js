@@ -173,31 +173,3 @@ app.get('/api/exercise/log?', (req, res) => {
       }
     });
 });
-
-// ------------------------------------------------------------------------------------------
-//  DISREGARD NOTES FOR FUTURE REFERENCE
-
-// app.get('/test', (req, res) => {
-//   Users.findOne({ username: 'second' }, (err, data) => {
-//     // if existing update
-//     if (data) {
-//       res.send(data.date);
-//     } else {
-//       // if not existing in database
-//       res.send('User not existing');
-//     }
-//   });
-// });
-
-// query database
-// Users.find({
-//   'logs.date': {
-//     $gte: new Date(dateStartInput)
-//     // $lte: new Date(dateEndInput)
-//   },
-//   username: usernameInput
-// }).exec((err, data) => {
-//   if (data) {
-//     res.send(data);
-//   }
-// });

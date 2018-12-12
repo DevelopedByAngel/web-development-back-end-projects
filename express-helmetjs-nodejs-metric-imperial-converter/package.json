@@ -1,0 +1,21 @@
+{
+  "name": "express-helmetjs-nodejs-metric-imperial-converter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "helmet.js",
+    "express",
+    "node.js",
+    "metric-imperial",
+    "converter"
+  ],
+  "author": "Niccolo Lampa",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}

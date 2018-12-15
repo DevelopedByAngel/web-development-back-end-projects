@@ -14,10 +14,10 @@
   </div>
   <div class="Try It Out">
     <h2>TRY IT OUT</h2>
-    <form id="measure-form" method="POST" onsubmit="urlCreator()">
+    <form id="measure-form" method="GET" action="/api/convert" target= "_blank" rel ='noopener noreferrer'>
       <div class="input-area">
         Insert measurement here with abbreviated unit </br>
-        <input type="text" name="measure-input" placeholder="e.g. 3.9km" />
+        <input type="text" name="input" placeholder="e.g. 3.9 km" />
       </div>
       <div class="submit-area">
         <input class="submit-button" type="submit" value="Convert" />
@@ -44,7 +44,7 @@
       "returnUnit": &ltunit converted&gt, "string": &ltinformation&gt}
     </p>
 
-    <li>If only the unit is provided the system will assume 1 as the measurement. (e.g. km = 1km)</li>
+    <li>If only the unit is provided the system will assume 1 as the measurement. (e.g. km = 1 km)</li>
   </div>
 
   <div class="example">
@@ -53,17 +53,17 @@
     <li>Liters to Gallons</li>
     <p class="example-result">
       {"initNum": 1 ,"initUnit": "l", "returnNum": 0.2642,
-      "returnUnit": "gal", "string": "1L is 0.2642gal"}
+      "returnUnit": "gal", "string": "1 L is 0.2642 gal"}
     </p>
     <li>Kilograms to Pounds</li>
     <p class="example-result">
       {"initNum": 1 ,"initUnit": "kg", "returnNum": 2.2046,
-      "returnUnit": "lbs", "string": "1kg is 2.2046lbs"}
+      "returnUnit": "lbs", "string": "1 kg is 2.2046 lbs"}
     </p>
     <li>Kilometer to Miles</li>
     <p class="example-result">
       {"initNum": 1 ,"initUnit": "km", "returnNum": 0.6214,
-      "returnUnit": "mi", "string": "1km is 0.6214mi"}
+      "returnUnit": "mi", "string": "1 km is 0.6214 mi"}
     </p>
 
   </div>

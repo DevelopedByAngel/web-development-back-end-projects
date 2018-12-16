@@ -19,7 +19,7 @@ app.use('/', bodyParser.urlencoded({ extended: false }));
 // function to collect input and split measure and unit
 const inputCollector = input => {
   // get numerical measure
-  const numPattern = /[^a-z]+(?=[^/d])\d|^\.*\d+\.*\d*\/*\d*(?=[a-z])|^d+\s{1}\d+\/{1}\d+(?=\s[^/d])/i; // /^.+(?=\s)/
+  const numPattern = /[^a-z]+(?=\s[^/d])|^\.*\d+\.*\d*\/*\d*(?=[a-z])|^d+\s{1}\d+\/{1}\d+(?=\s[^/d])/i; // /^.+(?=\s)/
 
   // /^.+(?=\s[^/d])
 
@@ -33,7 +33,7 @@ const inputCollector = input => {
     numMeasure = numMeasure[0];
 
     // get unit
-    const unitPattern = /(?<=\s)\w+$|(?<=\d+)\D$/;
+    const unitPattern = /(?<=\s)\w+$|(?<=\d+)[^0-9\.\s\/]+/;
 
     //
 

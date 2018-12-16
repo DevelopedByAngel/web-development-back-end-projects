@@ -19,30 +19,35 @@ app.use('/', bodyParser.urlencoded({ extended: false }));
 // function to collect input and split measure and unit
 const inputCollector = input => {
   // get numerical measure
-  const numPattern = /^.*(?=\s)/;
+  const numPattern = /[^a-z]+(?=[^/d])\d|^\.*\d+\.*\d*\/*\d*(?=[a-z])|^d+\s{1}\d+\/{1}\d+(?=\s[^/d])/i; // /^.+(?=\s)/
 
-  const numMeasure = input.match(numPattern)[0];
+  // /^.+(?=\s[^/d])
 
-  // get unit
-  const unitPattern = /(?<=\s)\w+$/;
+  let numMeasure = input.match(numPattern);
+  let unit;
+  // didn't input any measure
+  if (numMeasure === null) {
+    numMeasure = '1';
+    unit = input;
+  } else {
+    numMeasure = numMeasure[0];
 
-  const unit = input.match(unitPattern)[0];
+    // get unit
+    const unitPattern = /(?<=\s)\w+$|(?<=\d+)\D$/;
+
+    //
+
+    unit = input.match(unitPattern);
+
+    // didn't input any unit
+    if (unit === null) {
+      unit = '';
+    } else {
+      unit = unit[0];
+    }
+  }
 
   return [numMeasure, unit];
-};
-
-// ------------------------------------------------------------------------
-// function to check if unit is valid
-const unitChecker = unit => {
-  const avail = { metric: ['l', 'kg', 'km'], imperial: ['gal', 'lbs', 'mi'] };
-
-  if (avail.metric.indexOf(unit) >= 0) {
-    return 'metric';
-  }
-  if (avail.imperial.indexOf(unit) >= 0) {
-    return 'imperial';
-  }
-  return false;
 };
 
 //--------------------------------------------------------------------------
@@ -63,15 +68,61 @@ const converter = (measure, unit) => {
     case 'mi':
       return [measure * 1.60934, 'km'];
     default:
-      break;
+      return false;
   }
 };
 
 // -----------------------------------------------------------------------
-
 // function to check if number is valid and convert it.
+const numCheck = num => {
+  // check if it doesnt have a fraction
+  if (num.indexOf('/') === -1) {
+    // makesure no space in the number
+    if (num.indexOf(' ') >= 0) {
+      return NaN;
+    }
+    // if valid decimal number or wholenumber without fraction
+    return parseFloat(num);
+  }
 
-const numCheck = (num, res) => {};
+  // continue if num has fraction
+
+  // pattern for whole number
+  const wholeNumPattern = /^.*(?=\s|\.)/;
+
+  let wholeNum = num.match(wholeNumPattern);
+
+  // if fraction only and no whole number
+  if (wholeNum === null) {
+    wholeNum = 0;
+  } // if it does have whole number get first element of match array
+  else {
+    wholeNum = wholeNum[0];
+  }
+
+  // get the characters after the decimal or space which is the fraction
+  const fractionPattern = /(?<=\s|\.).*$/;
+
+  let fraction = num.match(fractionPattern);
+  // if fraction only
+  if (fraction === null) {
+    fraction = num;
+  } else {
+    fraction = fraction[0];
+  }
+
+  // split the fraction by /
+
+  fraction = fraction.split('/', 2);
+
+  // compute decimal
+  const decimal = parseFloat(fraction[0]) / parseFloat(fraction[1]);
+
+  // combine whole number and decimal
+  const finalNum = parseFloat(wholeNum) + decimal;
+
+  return finalNum;
+};
 
 // ----------------------------------------------------------------------
 // get projectInfo for home page
@@ -84,14 +135,30 @@ app.get('/', (req, res) => {
 app.get('/api/convert?', (req, res) => {
   const inputList = inputCollector(req.query.input);
 
+  const numberInput = numCheck(inputList[0]);
+
+  console.log(numberInput);
+
+  // check if numberInput is not number
+  if (isNaN(numberInput)) {
+    res.send('Please input the measure properly (eg. 1, 2 3/4 or 2.3/4)');
+    return;
+  }
+
+  const convertedList = converter(numberInput, inputList[1].toLowerCase());
+
   //  if unit is invalid
-  if (!unitChecker(inputList[1])) {
+  if (convertedList === false) {
     res.send('invalid unit (l, kg, km, gal, lbs, mi only)');
     return;
   }
 
-  const convertedList = converter(parseFloat(inputList[0]), inputList[1]);
-  console.log(convertedList);
+  // convertedList round show only 5 decimal places
+
+  convertedList[0] = parseFloat(convertedList[0].toFixed(5));
+
+  // console.log('see here');
+  // console.log(convertedList);
 
   res.json({
     initNum: inputList[0],
@@ -108,34 +175,6 @@ app.get('/api/convert?', (req, res) => {
 
 /* Coded by Niccolo Lampa. Email: niccololampa@gmail.com */
 
-// //
-// let a="2.1/4"
-
-// a= a.split("")
-
-// console.log(a);
-
-// console.log(a.indexOf("/"));
-
-// let numString='';
-// let fraction;
-// // console.log(numString);
-
-// for (let i = 0; i<a.length; i++ ) {
-
-// if (a[i]==="/"){
-
-//   numString = numString.slice(0,-1)
-
-//   fractionConverted =  (parseFloat(a[i-1]) / parseFloat(a[i+1]));
-
-//   numString= numString.concat(fractionConverted);
-//   i+=1  ;
-//   }
-
-// numString=numString.concat(a[i]);
-// console.log(numString);
-
-// }
-
-// // console.log(numString);
+// 1. 5 l
+// 1 1/2L
+// 1. 5L

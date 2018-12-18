@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mongo & Express Issue Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="title">
+    <h1>MongoDB, Mongoose & Express Issue Tracker</h1>
+  </div>
+  <div class="project-details">
+    <h2>DETAILS</h2>
+
+    <li>Shows existing issues and the status</li>
+
+  </div>
+  <div class="Try It Out">
+    <h2>TRY IT OUT</h2>
+    <div class="submit-issue">
+      <h3>Submit Issue</h3>
+      <form id="submitIssueForm" method="POST" action="/api/shorturl/" target="_blank" rel="noopener noreferrer" )>
+        <div class="input-area">
+          <div class="form-area-one">
+            <label class="form-label" for="issue_title"> Title: </label>
+            <input name="issue_title" placeholder="title" required />
+            <label class="form-label" for="created_by">Issue Author: </label>
+            <input name="created_by" placeholder="author" required /></div>
+
+          <div class="form-area-two">
+            <label class="form-label" for="issue_text"> Issue Details:</label></br>
+            <textarea name="issue_text" rows="8" cols="80" required>Insert issue details here</textarea>
+          </div>
+          <div class="form-area-three">
+            <label class="form-label" for="assigned_to"> Assigned To: </label>
+            <input name="assigned_to" placeholder="optional assignee" />
+            <label class="form-label" for="status_text">Status Text: </label>
+            <input name="status_text" placeholder="optional status text" /></div>
+        </div>
+        <div class="submit-area">
+          <input class="submit-button" type="submit" value="Submit" />
+        </div>
+      </form>
+    </div>
+    <div class="update-issue">
+      <h3>Update Issue</h3>
+      <form id="updateIssueForm" method="POST" action="/api/shorturl/" target="_blank" rel="noopener noreferrer" )>
+        <div class="input-area">
+          <div class="form-area-one">
+            <label class="form-label" for="issue_id"> ID: </label>
+            <input name="issue_id" placeholder="issue id" required />
+            <label class="form-label" for="issue_title"> Title: </label>
+            <input name="issue_title" placeholder="title" />
+            <label class="form-label" for="created_by">Issue Author: </label>
+            <input name="created_by" placeholder="author" /></div>
+
+          <div class="form-area-two">
+            <label class="form-label" for="issue_text"> Issue Details:</label></br>
+            <textarea name="issue_text" rows="8" cols="80">Insert issue details here</textarea>
+          </div>
+          <div class="form-area-three">
+            <label class="form-label" for="assigned_to"> Assigned To: </label>
+            <input name="assigned_to" placeholder="optional assignee" />
+            <label class="form-label" for="status_text">Status Text: </label>
+            <input name="status_text" placeholder="optional status text" /></div>
+        </div>
+        <div class="form-area-four">
+          <input type="checkbox" name="change-status"><label class="form-label" for="change_status"> Tick to close
+            issue </label>
+
+        </div>
+        <div class="submit-area">
+          <input class="submit-button" type="submit" value="Update" />
+        </div>
+      </form>
+    </div>
+    <div class="delete-issue">
+      <h3>Delete Issue</h3>
+      <form id="deleteIssueForm" method="PUT" action="/api/shorturl/" target="_blank" rel="noopener noreferrer" )>
+        <div class="input-area">
+          <div class="form-area-one">
+            <label class="form-label" for="issue_id"> ID: </label>
+            <input name="issue_id" placeholder="issue id" required />
+          </div>
+        </div>
+
+
+        <div class="submit-area">
+          <input class="submit-button" type="submit" value="Delete" />
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+
+
+</body>
+
+</html>

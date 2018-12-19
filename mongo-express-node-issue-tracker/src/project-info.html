@@ -22,36 +22,39 @@
     <h2>TRY IT OUT</h2>
     <div class="submit-issue">
       <h3>Submit Issue</h3>
-      <form id="submitIssueForm" method="POST" action="/api/shorturl/" target="_blank" rel="noopener noreferrer" )>
+      <form id="submitIssueForm" method="POST" action="/api/issues/" target="_blank" rel="noopener noreferrer" )>
         <div class="input-area">
           <div class="form-area-one">
-            <label class="form-label" for="issue_title"> Title: </label>
-            <input name="issue_title" placeholder="title" required />
-            <label class="form-label" for="created_by">Issue Author: </label>
-            <input name="created_by" placeholder="author" required /></div>
+            <label class="form-label" for="issueTitle"> Title: </label>
+            <input name="issueTitle" placeholder="title" required />
+            <label class="form-label" for="createdBy">Issue Author: </label>
+            <input name="createdBy" placeholder="author" required /></div>
 
           <div class="form-area-two">
-            <label class="form-label" for="issue_text"> Issue Details:</label></br>
-            <textarea name="issue_text" rows="8" cols="80" required>Insert issue details here</textarea>
+            <label class="form-label" for="issueText"> Issue Details:</label></br>
+            <textarea name="issueText" rows="8" cols="80" required>Insert issue details here</textarea>
           </div>
           <div class="form-area-three">
-            <label class="form-label" for="assigned_to"> Assigned To: </label>
-            <input name="assigned_to" placeholder="optional assignee" />
-            <label class="form-label" for="status_text">Status Text: </label>
-            <input name="status_text" placeholder="optional status text" /></div>
+            <label class="form-label" for="assignedTo"> Assigned To: </label>
+            <input name="assignedTo" placeholder="optional assignee" />
+            <label class="form-label" for="statusText">Status Text: </label>
+            <input name="statusText" placeholder="optional status text" /></div>
         </div>
         <div class="submit-area">
           <input class="submit-button" type="submit" value="Submit" />
         </div>
       </form>
     </div>
+
+
     <div class="update-issue">
       <h3>Update Issue</h3>
-      <form id="updateIssueForm" method="POST" action="/api/shorturl/" target="_blank" rel="noopener noreferrer" )>
+      <form id="updateIssueForm" method="POST" onsubmit="urlCreatorPut()" target="_blank" rel="noopener noreferrer" )>
+        <!-- <input type="hidden" name="_method" value="PUT"> -->
         <div class="input-area">
           <div class="form-area-one">
-            <label class="form-label" for="issue_id"> ID: </label>
-            <input name="issue_id" placeholder="issue id" required />
+            <label class="form-label" for="issue_id">PUT ID: </label>
+            <input name="issue_id" id="updateId" placeholder="issue id" required />
             <label class="form-label" for="issue_title"> Title: </label>
             <input name="issue_title" placeholder="title" />
             <label class="form-label" for="created_by">Issue Author: </label>
@@ -77,13 +80,15 @@
         </div>
       </form>
     </div>
+
+
     <div class="delete-issue">
       <h3>Delete Issue</h3>
-      <form id="deleteIssueForm" method="PUT" action="/api/shorturl/" target="_blank" rel="noopener noreferrer" )>
+      <form id="deleteIssueForm" method="POST" onsubmit="urlCreatorDel()" target="_blank" rel="noopener noreferrer" )>
         <div class="input-area">
           <div class="form-area-one">
             <label class="form-label" for="issue_id"> ID: </label>
-            <input name="issue_id" placeholder="issue id" required />
+            <input name="issue_id" id="deleteId" placeholder="issue id" required />
           </div>
         </div>
 
@@ -94,11 +99,61 @@
 
       </form>
     </div>
+    <div class="get-issue">
+      <h3>Get Issue</h3>
+      <form id="getIssueForm" method="GET" onsubmit="urlCreatorGet()" target="_blank" rel="noopener noreferrer" )>
+        <div class="input-area">
+          <div class="form-area-one">
+            <label class="form-label" for="issue_id"> ID: </label>
+            <input name="issue_id" id="getId" placeholder="issue id" required />
+          </div>
+        </div>
+
+
+        <div class="submit-area">
+          <input class="submit-button" type="submit" value="Get Issue" />
+        </div>
+
+      </form>
+    </div>
   </div>
 
 
 
 
 </body>
+
+<script>
+
+  function urlCreatorGet() {
+    let updateId = document.getElementById('getId').value;
+
+    var action_src =
+      '/api/issues/' + updateId;
+    var url_form = document.getElementById('getIssueForm');
+    url_form.action = action_src;
+
+  }
+
+  function urlCreatorPut() {
+    let updateId = document.getElementById('updateId').value;
+
+    var action_src =
+      '/api/issues/' + updateId + "?_method=PUT";
+    var url_form = document.getElementById('updateIssueForm');
+    url_form.action = action_src;
+    // url_form.action = "/api/issues/a?_method=PUT";
+  }
+
+  function urlCreatorDel() {
+    let updateId = document.getElementById('deleteId').value;
+
+    var action_src =
+      '/api/issues/' + updateId + "?_method=DELETE";
+    var url_form = document.getElementById('deleteIssueForm');
+    url_form.action = action_src;
+    // url_form.action = "/api/issues/a?_method=PUT";
+  }
+</script>
 
 </html>

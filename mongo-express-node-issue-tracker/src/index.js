@@ -3,17 +3,29 @@
 /* PREVIEW MODE DOESN'T SHOW ALL FEATURES */
 /* Run on http://localhost:8080/ after node index.js */
 
+
 // for environment variables
 require('dotenv/config');
-
 const express = require('express');
+const helmet = require('helmet');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+// for put and delete form methods
+const methodOverride = require('method-override')
+
+
 
 const app = express();
-const bodyParser = require('body-parser');
+// for put and delete form methods
 
-const mongoose = require('mongoose');
+// this will include all helmet middleware
+app.use(helmet());
+
+app.use(methodOverride('_method'))
+
 
 const Schema = mongoose.Schema;
+
 
 app.listen(8080);
 
@@ -47,69 +59,68 @@ const issuesSchema = new Schema({
 
 const Issues = mongoose.model('Issues', issuesSchema);
 
-//  PROCESS POST REQUEST. WHEN URL IS SUBMITTED
-app.post('/api/shorturl/', (req, res) => {
+// ----------------------------------------------------------------------------------------
+//  PROCESS POST REQUEST. WHEN ISSUE IS SUBMITTED
+app.post('/api/issues/', (req, res) => {
   // get the url provided in form
-  const urlProvided = req.body.urlInput;
-  const id = null;
+  const { issueTitle, createdBy, issueText, assignedTo, statusText } = req.body;
+  const dateCreated = new Date();
 
-  // Check validty of url. If  is not valid
-  if (validateUrl(urlProvided) === false) {
-    return res.json({ error: 'invalid URL' });
-  }
-
-  // Chekc if url is already in the database
-
-  Urls.findOne({ original_url: urlProvided }, (err, data) => {
-    // if data is in database
+  // Upload submitted Issue to Mongo database
+  const issuesUploaded = new Issues({ issue_title: issueTitle, created_on: dateCreated, updated_on: dateCreated, created_by: createdBy, assigned_to: assignedTo, issue_text: issueText, status_text: statusText, open: true });
+  issuesUploaded.save((err, data) => {
     if (data) {
-      const id = data.count_id.toString();
-      const shorturl = `${req.get('host')  }/a/${  id}`;
-      return res.send({ original_url: urlProvided, short_url: shorturl });
+      // return processed
+      // res.json(data._id);
+      // redirect to issue get issue id 
+      res.redirect(`/api/issues/${data._id}`)
     }
-    // if not create in database
-
-    console.log('creating database ');
-
-    // Upload submitted URL to Mongo database if url is valid
-    const urlUploaded = new Urls({ original_url: urlProvided });
-    urlUploaded.save((err, data) => {
-      if (err) return console.log(err);
-
-      // Once uploaded find the system generated ID of url. This will be used as the shortened url.
-      Urls.findOne({ original_url: urlProvided }, (err, data) => {
-        if (err) return console.log(err);
-
-        if (data) {
-          const id = data.count_id.toString();
-          const shorturl = `${req.get('host')  }/a/${  id}`;
-          const output = { original_url: urlProvided, short_url: shorturl };
-          // return processed
-          res.json(output);
-        }
-      });
-
-    });
-
-  });
-});
-
-// SHORT URL REDIRECTING TO ORIGINAL URL
-app.get('/a/:urlInput', (req, res) => {
-  const urlInput = req.params.urlInput;
-  Urls.findOne({ count_id: urlInput }, (err, data) => {
-    if (err) {
-      return console.log(err);
-    }
-
-    if (data) {
-      const orgUrl = data.original_url;
-
-      // redirect must include 301 request and http://
-      res.redirect(301, orgUrl);
+    else {
+      return console.log(err)
     }
   });
+
 });
+
+// ----------------------------------------------------------------------------------------
+//  PROCESS GET FOR ISSUE input is ID
+// 5c191acecae81f16461ae3ef
+
+app.get('/api/issues/:id_string', (req, res) => {
+
+  Issues.findOne({ _id: req.params.id_string }, (err, data) => {
+    if (data) {
+      res.send(data)
+    }
+    else {
+      // id does not exist in database
+      res.send("Issue Id does not exist")
+    }
+  })
+})
+
+// ----------------------------------------------------------------------------------------
+// UPDATE ISSUE USING PUT 
+
+app.put('/api/issues/:id_string?', (req, res) => {
+  res.send(req.body.issue_id);
+})
+
+// app.put('/api/issues/a?', (req, res) => {
+//   res.send("this is an update");
+// })
+
+// onsubmit="urlCreator()"
+// action="/api/issues/a?_method=PUT"
+
+// ----------------------------------------------------------------------------------------
+// DELETE ISSUE
+
+
+app.delete('/api/issues/:id_string?', (req, res) => {
+  res.send(req.body.issue_id);
+})
+
 
 /* Coded by Niccolo Lampa. Email: niccololampa@gmail.com */
 

@@ -3,7 +3,6 @@
 /* PREVIEW MODE DOESN'T SHOW ALL FEATURES */
 /* Run on http://localhost:8080/ after node index.js */
 
-
 // for environment variables
 require('dotenv/config');
 const express = require('express');
@@ -13,19 +12,17 @@ const mongoose = require('mongoose');
 // for put and delete form methods
 const methodOverride = require('method-override')
 
-
-
 const app = express();
-// for put and delete form methods
+
+//  express app to set 'pug' as the 'view-engine'. 
+app.set('view engine', 'pug')
 
 // this will include all helmet middleware
 app.use(helmet());
 
 app.use(methodOverride('_method'))
 
-
 const Schema = mongoose.Schema;
-
 
 app.listen(8080);
 
@@ -35,16 +32,12 @@ const connection = mongoose.connect(
 );
 
 // SERVING STATIC ASSETS
-app.use(express.static(`${__dirname}/styling`));
+app.use(express.static(`${__dirname}/public`));
 
 // GETTING READY FOR POST REQUEST
 app.use('/', bodyParser.urlencoded({ extended: false }));
 
-// GET PROJECT INFO
-app.get('/', (req, res) => {
-  res.sendFile(`${__dirname}/project-info.html`);
-});
-
+// -------------------------------------------------------------------------
 // CREATE  A ISSUES SCHEMA
 const issuesSchema = new Schema({
   issue_title: { type: String, required: true },
@@ -59,7 +52,28 @@ const issuesSchema = new Schema({
 
 const Issues = mongoose.model('Issues', issuesSchema);
 
+
+
+
 // ----------------------------------------------------------------------------------------
+// GET PROJECT INFO
+// app.get('/', (req, res) => {
+//   res.sendFile(`${__dirname}/project-info.html`);
+// });
+app.get('/', (req, res) => {
+  // console.log(Issues.find());
+  Issues.find().select('-__v').sort({ created_on: -1 }).exec((err, data) => {
+    if (data) {
+      res.render(`${__dirname}/views/pug/index.pug`, { issuesDocs: data });
+    } else {
+      res.render("baaah")
+    }
+  })
+  // res.render(`${__dirname}/views/pug/index.pug`);
+});
+
+
+// ---------------------------------------------------------------------
 //  PROCESS POST REQUEST. WHEN ISSUE IS SUBMITTED
 app.post('/api/issues/', (req, res) => {
   // get the url provided in form
@@ -76,7 +90,7 @@ app.post('/api/issues/', (req, res) => {
       res.redirect(`/api/issues/${data._id}`)
     }
     else {
-      return console.log(err)
+      res.send("upload error")
     }
   });
 
@@ -84,7 +98,6 @@ app.post('/api/issues/', (req, res) => {
 
 // ----------------------------------------------------------------------------------------
 //  PROCESS GET FOR ISSUE input is ID
-// 5c191acecae81f16461ae3ef
 
 app.get('/api/issues/:id_string', (req, res) => {
 
@@ -92,8 +105,9 @@ app.get('/api/issues/:id_string', (req, res) => {
     if (data) {
       res.send(data)
     }
+    // if id does not exist in database
     else {
-      // id does not exist in database
+
       res.send("Issue Id does not exist")
     }
   })
@@ -103,7 +117,52 @@ app.get('/api/issues/:id_string', (req, res) => {
 // UPDATE ISSUE USING PUT 
 
 app.put('/api/issues/:id_string?', (req, res) => {
-  res.send(req.body.issue_id);
+
+  const { issueId, issueTitle, createdBy, issueText, assignedTo, statusText, changeStatus } = req.body
+
+  Issues.findOne({ _id: issueId }, (err, data) => {
+    // if id exist
+    if (data) {
+      // create update object
+      let objForUpdate = {};
+
+      // add to the update object if user submitted any edits for the following: 
+      if (issueTitle) objForUpdate.issue_title = issueTitle;
+      if (createdBy) objForUpdate.created_by = createdBy;
+      if (issueText) objForUpdate.issue_text = issueText;
+      if (assignedTo) objForUpdate.assigned_to = assignedTo
+      if (statusText) objForUpdate.status_text = statusText;
+      if (changeStatus === "true") objForUpdate.open = true
+      if (changeStatus === "false") objForUpdate.open = false
+
+      // only update if objectForUpdate has greater than zero elements
+      if (Object.keys(objForUpdate).length > 0) {
+        // also edit updated date if user provided updates. 
+        objForUpdate.updated_on = new Date();
+
+        objForUpdate = { $set: objForUpdate }
+
+        Issues.updateOne({ _id: issueId }, objForUpdate, (error, updated) => {
+          if (updated) {
+            res.redirect(`/api/issues/${data._id}`)
+          }
+          else {
+            res.send("Update Error")
+          }
+        })
+      }
+      // if no updates were provided
+      else {
+        res.send("No update parameters provided")
+      }
+
+      // if id does not exist
+    }
+    else {
+      res.send("Issue Id does not exist")
+    }
+  })
+
 })
 
 // app.put('/api/issues/a?', (req, res) => {
@@ -116,9 +175,17 @@ app.put('/api/issues/:id_string?', (req, res) => {
 // ----------------------------------------------------------------------------------------
 // DELETE ISSUE
 
-
 app.delete('/api/issues/:id_string?', (req, res) => {
-  res.send(req.body.issue_id);
+  // res.send("test")
+  Issues.deleteOne({ _id: req.body.issueId }, (err, data) => {
+    // if id is existing delete issue
+    if (data) {
+      res.send(`Issue has been removed`)
+      // if id not existing
+    } else {
+      res.send(" Issue Id does not exist")
+    }
+  });
 })
 
 

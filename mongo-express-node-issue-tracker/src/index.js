@@ -56,21 +56,35 @@ const Issues = mongoose.model('Issues', issuesSchema);
 
 
 // ----------------------------------------------------------------------------------------
-// GET PROJECT INFO
-// app.get('/', (req, res) => {
-//   res.sendFile(`${__dirname}/project-info.html`);
-// });
+// GET HOME PAGE
 app.get('/', (req, res) => {
   // console.log(Issues.find());
   Issues.find().select('-__v').sort({ created_on: -1 }).exec((err, data) => {
     if (data) {
       res.render(`${__dirname}/views/pug/index.pug`, { issuesDocs: data });
     } else {
-      res.render("baaah")
+      res.render("Error Loading Home Page")
     }
   })
-  // res.render(`${__dirname}/views/pug/index.pug`);
 });
+
+// ----------------------------------------------------------------------------------------
+//  PROCESS GET FOR ISSUE input is ID
+
+app.get('/api/issues/:id_string', (req, res) => {
+
+  Issues.findOne({ _id: req.params.id_string }, (err, data) => {
+    if (data) {
+      // res.send(data)
+      res.render(`${__dirname}/views/pug/issue-info.pug`, { issueData: data })
+    }
+    // if id does not exist in database
+    else {
+      res.render(`${__dirname}/views/pug/issue-info.pug`, { issueData: null })
+      // res.send("Issue Id does not exist")
+    }
+  })
+})
 
 
 // ---------------------------------------------------------------------
@@ -96,22 +110,6 @@ app.post('/api/issues/', (req, res) => {
 
 });
 
-// ----------------------------------------------------------------------------------------
-//  PROCESS GET FOR ISSUE input is ID
-
-app.get('/api/issues/:id_string', (req, res) => {
-
-  Issues.findOne({ _id: req.params.id_string }, (err, data) => {
-    if (data) {
-      res.send(data)
-    }
-    // if id does not exist in database
-    else {
-
-      res.send("Issue Id does not exist")
-    }
-  })
-})
 
 // ----------------------------------------------------------------------------------------
 // UPDATE ISSUE USING PUT 
@@ -147,19 +145,20 @@ app.put('/api/issues/:id_string?', (req, res) => {
             res.redirect(`/api/issues/${data._id}`)
           }
           else {
-            res.send("Update Error")
+            res.render(`${__dirname}/views/pug/update-result.pug`, { updateData: null })
           }
         })
       }
       // if no updates were provided
       else {
-        res.send("No update parameters provided")
+        res.render(`${__dirname}/views/pug/update-result.pug`, { updateData: "no-params" })
+        // res.send("No update parameters provided")
       }
 
       // if id does not exist
     }
     else {
-      res.send("Issue Id does not exist")
+      res.render(`${__dirname}/views/pug/update-result.pug`, { updateData: "no-id" })
     }
   })
 
@@ -173,20 +172,22 @@ app.put('/api/issues/:id_string?', (req, res) => {
 // action="/api/issues/a?_method=PUT"
 
 // ----------------------------------------------------------------------------------------
-// DELETE ISSUE
+// DELETE ISSUE METHODS
 
+// from form
 app.delete('/api/issues/:id_string?', (req, res) => {
   // res.send("test")
   Issues.deleteOne({ _id: req.body.issueId }, (err, data) => {
     // if id is existing delete issue
     if (data) {
-      res.send(`Issue has been removed`)
+      res.render(`${__dirname}/views/pug/issue-delete.pug`, { issueDeleted: true });
       // if id not existing
     } else {
-      res.send(" Issue Id does not exist")
+      res.render(`${__dirname}/views/pug/issue-delete.pug`, { issueDeleted: false });
     }
   });
 })
+
 
 
 /* Coded by Niccolo Lampa. Email: niccololampa@gmail.com */

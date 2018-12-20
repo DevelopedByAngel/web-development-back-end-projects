@@ -52,11 +52,9 @@ form {
   text-align: left;
   border: 2px solid white ;
   width: fit-content;
-  margin: 5px;
+  margin: 10px 15px;
   padding: 4px;
 }
-
-
 
 
 .try-it-out{
@@ -66,9 +64,13 @@ form {
   
 }
 
-.try-sec {
-  
+@media (max-width: 700px) {
+  .try-it-out{
+    flex-direction: column;
+    
+  }
 }
+
 
 h3{
   text-align: center;
@@ -85,5 +87,11 @@ h3{
 
 .issue-options{
   font-weight: bold; 
+}
+
+.delete-issue-button{
+  border: none;
+  text-align: center;
+  margin:auto;
 }
 

@@ -1,6 +1,5 @@
 function urlCreatorGet() {
     const updateId = document.getElementById('getId').value;
-
     const action_src =
         `/api/issues/${updateId}`;
     const url_form = document.getElementById('getIssueForm');
@@ -10,12 +9,10 @@ function urlCreatorGet() {
 
 function urlCreatorPut() {
     const updateId = document.getElementById('updateId').value;
-
     const action_src =
         `/api/issues/${updateId}?_method=PUT`;
     const url_form = document.getElementById('updateIssueForm');
     url_form.action = action_src;
-    // url_form.action = "/api/issues/a?_method=PUT";
 }
 
 function urlCreatorDel() {
@@ -25,5 +22,5 @@ function urlCreatorDel() {
         `/api/issues/${updateId}?_method=DELETE`;
     const url_form = document.getElementById('deleteIssueForm');
     url_form.action = action_src;
-    // url_form.action = "/api/issues/a?_method=PUT";
+
 }

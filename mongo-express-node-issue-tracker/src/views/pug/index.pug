@@ -5,7 +5,7 @@ head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width,initial-scale=1")
     title Mongo & Express Issue Tracker
-    link(rel="stylesheet" href="styling/style.css")
+    link(rel="stylesheet" href="/styling/style.css")
 
 
 body
@@ -19,7 +19,7 @@ body
     h2 TRY IT OUT
     div(class="try-it-out")        
         div(class="try-sec submit-issue")
-            form(id="submitIssueForm" method="POST" action="/api/issues/" target="_blank" rel="noopener noreferrer" )
+            form(id="submitIssueForm" method="POST" action="/api/issues/")
                 h3 Submit Issue
                 div(class="input-area")
                     div(class="form-area form-area-one")
@@ -29,6 +29,9 @@ body
                         p
                             label(class="form-label" for="createdBy") Issue Author: 
                             input(name="createdBy" placeholder="author" required)
+                        p
+                            label(class="form-label" for="assignedTo") Assigned To: 
+                            input(name="assignedTo" placeholder="assignee(optional)")
 
                     div(class="form-area form-area-two")
                         p
@@ -36,12 +39,9 @@ body
                         p
                             textarea(name="issueText" rows="5" cols="50" required)
                     
-                    div(class="form-area-three")
+                    div(class="form-area-three")                        
                         p
-                            label(class="form-label" for="assignedTo") Assigned To: 
-                            input(name="assignedTo" placeholder="assignee(optional)")
-                        p
-                            label(class="form-label" for="statusText") Status Text: 
+                            label(class="form-label" for="statusText") Status Details: 
                             input(name="statusText" placeholder="status text(optional)")
                
                 div(class="submit-area")
@@ -49,7 +49,7 @@ body
                 
 
         div(class="try-sec update-issue")
-            form(id="updateIssueForm" method="POST" onSubmit="urlCreatorPut()" target="_blank" rel="noopener noreferrer")
+            form(id="updateIssueForm" method="POST" onSubmit="urlCreatorPut()")
                 h3 Update Issue
                 div(class="input-area")
                     div(class="form-area form-area-one")
@@ -62,6 +62,9 @@ body
                         p
                             label(class="form-label" for="createdBy") Issue Author: 
                             input(name="createdBy" placeholder="author(optional)")
+                        p
+                            label(class="form-label" for="assignedTo") Assigned To: 
+                            input(name="assignedTo" placeholder="assignee(optional)")
 
                     div(class="form-area form-area-two")
                         p
@@ -69,12 +72,9 @@ body
                         p                        
                             textarea(name="issueText" rows="5" cols="50")
                     
-                    div(class="form-area-three")
+                    div(class="form-area-three")                        
                         p
-                            label(class="form-label" for="assignedTo") Assigned To: 
-                            input(name="assignedTo" placeholder="assignee(optional)")
-                        p
-                            label(class="form-label" for="statusText") Status Text: 
+                            label(class="form-label" for="statusText") Status Details: 
                             input(name="statusText" placeholder="status text(optional)")
                 
                     div(class="form-area-four")
@@ -89,7 +89,7 @@ body
                 
 
         div(class="try-sec delete-issue")
-            form(id="deleteIssueForm" method="POST" onsubmit="urlCreatorDel()" target="_blank" rel="noopener noreferrer")
+            form(id="deleteIssueForm" method="POST" onsubmit="urlCreatorDel()")
                 h3 Delete Issue
                 div(class="input-area")
                     div(class="form-area form-area-one")
@@ -101,7 +101,7 @@ body
            
         
         div(class="try-sec get-issue")
-            form(id="getIssueForm" method="GET" onsubmit="urlCreatorGet()" target="_blank" rel="noopener noreferrer" )
+            form(id="getIssueForm" method="GET" onsubmit="urlCreatorGet()")
                 h3 Get Issue
                 div(class="input-area")
                     div(class="form-area form-area-one")
@@ -113,37 +113,41 @@ body
                 
     
     div(class="issue-database")
-        h2 ISSUE LIST       
+        h2 ISSUE LIST (LATEST SHOWN FIRST)       
         
         each issue, index in issuesDocs
             div(class= 'issue-box')
                 div
                     p <strong>ID</strong>: #{issuesDocs[index]._id}
-                div
 
+                div
                     p <strong>TITLE</strong>: #{issuesDocs[index].issue_title}
                 
                 div
-                    p <strong>AUTHOR</strong>:  #{issuesDocs[index].created_by} <strong>ASSIGNEE</strong>: #{issuesDocs[index].assigned}
+                    p <strong>AUTHOR</strong>:  #{issuesDocs[index].created_by} <strong>ASSIGNEE</strong>: #{issuesDocs[index].assigned_to}
+
                 div
                     p <strong>CREATED</strong>: #{issuesDocs[index].created_on} 
                     p <strong>UPDATED</strong>: #{issuesDocs[index].updated_on} 
+
                 div
                     if  issuesDocs[index].open
                         p <strong>STATUS</strong>: OPEN
                     else
-                        p <strong>STATUS</strong>: Closed
-                div
-                    p <strong>STATUS DETAILS</strong>: #{issuesDocs[index].status_text} 
+                        p <strong>STATUS</strong>: CLOSED
+
                 div
                     p <strong>ISSUE DETAILS</strong>: 
                     p #{issuesDocs[index].issue_text}
 
                 div
-                    p
-                        a(class="issue-options" href="") CLOSE ISSUE?
-                    p
-                        a(class="issue-options" href="") DELETE ISSUE?
+                    p <strong>STATUS DETAILS</strong>: 
+                    p #{issuesDocs[index].status_text}                 
+
+                div                
+                    form(class="delete-issue-button" method="POST" action= '/api/issues/'+ issuesDocs[index]._id +'?_method=DELETE')
+                        input(name="issueId" type="hidden" value=issuesDocs[index]._id )
+                        input(class="submit-button" type="submit" value="Delete")
  
 script(src="/js/form.js")
 

@@ -1,0 +1,101 @@
+body {
+  background-color: #222;
+  color: #ddd;
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 15px;
+}
+
+h1 {
+  font-size: 35px;
+}
+
+h2 {
+  margin: 30px 0 10px 0;
+}
+s
+.input-area {
+  font-weight: bold;
+}
+input {
+  font-size: inherit;
+}
+
+.submit-button {
+  margin-top: 10px;
+  font-size: 18px;
+  -webkit-appearance: none;
+}
+
+li {
+  margin: 20px 0 10px 0;
+  font-weight: bold;
+}
+
+a:link {
+  color: inherit;
+}
+
+a:visited {
+  color: inherit;
+}
+
+a:hover {
+  font-weight: bold;
+}
+
+.author {
+  font-weight: bold;
+}
+
+form {
+  text-align: left;
+  border: 2px solid white ;
+  width: fit-content;
+  margin: 10px 20px;
+  padding: 10px;
+}
+
+
+.try-it-out{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  
+}
+
+@media (max-width: 1000px) {
+  form {
+    margin: 10px 80px;
+  }
+
+  .try-it-out{
+    /* display: initial; */
+  }
+}
+
+
+h3{
+  text-align: center;
+}
+
+.submit-area{
+  text-align: center;
+}
+
+
+.issue-box{
+  border: 5px solid white;
+  margin: 2px
+}
+
+.issue-options{
+  font-weight: bold; 
+}
+
+.delete-issue-button{
+  border: none;
+  text-align: center;
+  margin:auto;
+}
+

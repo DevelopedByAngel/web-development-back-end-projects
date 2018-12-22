@@ -69,9 +69,7 @@ form {
     margin: 10px 80px;
   }
 
-  .try-it-out{
-    /* display: initial; */
-  }
+ 
 }
 
 
@@ -84,7 +82,7 @@ h3{
 }
 
 
-.issue-box{
+.book-box{
   border: 5px solid white;
   margin: 2px
 }
@@ -93,9 +91,41 @@ h3{
   font-weight: bold; 
 }
 
-.delete-issue-button{
+.book-list-button{
   border: none;
   text-align: center;
   margin:auto;
 }
+
+.comment-table {
+  margin:auto;
+  
+}
+
+th {
+  border: 1px solid white;
+  text-align: center;
+  vertical-align: bottom;
+  width: 100px;
+  padding-left: 5px;
+}
+
+.comment-header{
+  font-weight: bold;  
+  height: 40px;
+  
+}
+
+.comment-details > th {
+  height: 80px;
+  vertical-align: middle;
+  text-align: left;
+  font-weight: normal;
+}
+
+
+.comment-text{
+  width: 500px;
+}
+
 

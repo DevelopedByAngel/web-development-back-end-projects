@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 html(lang="en")
 
+
 head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width,initial-scale=1")
-    title Mongo & Express Issue Tracker Update Error
+    title Mongo & Express Delete Library
     link(rel="stylesheet" href="/styling/style.css")
 
 
-body    
-    
-    if updateData === "no-params"
-        p No update parameters provided
-
-    else if updateData === "no-id"
-        p ID does not exit
+body
+    if libraryDeleted
+        p Whole book library is deleted
     else
-        p Update Error
+        p Unable to delete the whole book library
 
     p  
         a(href="/") Back To Home

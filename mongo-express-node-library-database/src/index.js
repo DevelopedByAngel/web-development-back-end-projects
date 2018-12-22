@@ -19,14 +19,17 @@ app.set('view engine', 'pug')
 
 // this will include all helmet middleware
 app.use(helmet());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.noCache());
+
 
 app.use(methodOverride('_method'))
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 app.listen(8080);
 
-const connection = mongoose.connect(
+mongoose.connect(
   process.env.MONGO_URI,
   { useNewUrlParser: true }
 );
@@ -37,31 +40,36 @@ app.use(express.static(`${__dirname}/public`));
 // GETTING READY FOR POST REQUEST
 app.use('/', bodyParser.urlencoded({ extended: false }));
 
+
 // -------------------------------------------------------------------------
-// CREATE  A ISSUES SCHEMA
-const issuesSchema = new Schema({
-  issue_title: { type: String, required: true },
-  created_on: { type: Date, required: true },
-  updated_on: { type: Date, required: true },
-  created_by: { type: String, required: true },
-  assigned_to: { type: String },
-  issue_text: { type: String, required: true },
-  status_text: { type: String },
-  open: { type: Boolean, required: true }
+// create a COMMENT SCHEMA 
+
+const commentsSchema = new Schema({
+  comment_by: { type: String, required: true },
+  comment_text: { type: String, required: true },
+  comment_date: { type: Date, required: true }
+})
+
+// -------------------------------------------------------------------------
+// CREATE  A BOOK SCHEMA
+const booksSchema = new Schema({
+  book_title: { type: String, required: true },
+  book_author: { type: String, required: true },
+  book_details: { type: String, required: true },
+  book_comments: { type: [commentsSchema] },
+  created_on: { type: Date }
+
 });
 
-const Issues = mongoose.model('Issues', issuesSchema);
-
-
+const Books = mongoose.model('Books', booksSchema);
 
 
 // ----------------------------------------------------------------------------------------
 // GET HOME PAGE
 app.get('/', (req, res) => {
-  // console.log(Issues.find());
-  Issues.find().select('-__v').sort({ created_on: -1 }).exec((err, data) => {
+  Books.find().select('-__v').sort({ created_on: -1 }).exec((err, data) => {
     if (data) {
-      res.render(`${__dirname}/views/pug/index.pug`, { issuesDocs: data });
+      res.render(`${__dirname}/views/pug/index.pug`, { booksDocs: data });
     } else {
       res.render("Error Loading Home Page")
     }
@@ -69,18 +77,18 @@ app.get('/', (req, res) => {
 });
 
 // ----------------------------------------------------------------------------------------
-//  PROCESS GET FOR ISSUE input is ID
+//  PROCESS GET FOR BOOK, input is ID
 
-app.get('/api/issues/:id_string', (req, res) => {
+app.get('/api/books/:id_string', (req, res) => {
 
-  Issues.findOne({ _id: req.params.id_string }, (err, data) => {
+  Books.findOne({ _id: req.params.id_string }, (err, data) => {
     if (data) {
       // res.send(data)
-      res.render(`${__dirname}/views/pug/issue-info.pug`, { issueData: data })
+      res.render(`${__dirname}/views/pug/book-info.pug`, { bookData: data })
     }
     // if id does not exist in database
     else {
-      res.render(`${__dirname}/views/pug/issue-info.pug`, { issueData: null })
+      res.render(`${__dirname}/views/pug/book-info.pug`, { bookData: null })
       // res.send("Issue Id does not exist")
     }
   })
@@ -88,20 +96,17 @@ app.get('/api/issues/:id_string', (req, res) => {
 
 
 // ---------------------------------------------------------------------
-//  PROCESS POST REQUEST. WHEN ISSUE IS SUBMITTED
-app.post('/api/issues/', (req, res) => {
+//  PROCESS POST REQUEST. WHEN NEW BOOK IS SUBMITTED
+app.post('/api/books/', (req, res) => {
   // get the url provided in form
-  const { issueTitle, createdBy, issueText, assignedTo, statusText } = req.body;
+  const { bookTitle, bookAuthor, bookDetails } = req.body;
   const dateCreated = new Date();
 
   // Upload submitted Issue to Mongo database
-  const issuesUploaded = new Issues({ issue_title: issueTitle, created_on: dateCreated, updated_on: dateCreated, created_by: createdBy, assigned_to: assignedTo, issue_text: issueText, status_text: statusText, open: true });
-  issuesUploaded.save((err, data) => {
+  const booksUploaded = new Books({ book_title: bookTitle, book_author: bookAuthor, book_details: bookDetails, created_on: dateCreated });
+  booksUploaded.save((err, data) => {
     if (data) {
-      // return processed
-      // res.json(data._id);
-      // redirect to issue get issue id 
-      res.redirect(`/api/issues/${data._id}`)
+      res.redirect(`/api/books/${data._id}`)
     }
     else {
       res.send("upload error")
@@ -112,81 +117,68 @@ app.post('/api/issues/', (req, res) => {
 
 
 // ----------------------------------------------------------------------------------------
-// UPDATE ISSUE USING PUT 
+// UPLOAD COMMENT TO BOOK USING PUT 
 
-app.put('/api/issues/:id_string?', (req, res) => {
+app.put('/api/books/:id_string?', (req, res) => {
 
-  const { issueId, issueTitle, createdBy, issueText, assignedTo, statusText, changeStatus } = req.body
+  const { bookId, commentBy, commentText } = req.body
 
-  Issues.findOne({ _id: issueId }, (err, data) => {
+  const commentDate = new Date();
+
+  const commentsData = { comment_by: commentBy, comment_text: commentText, comment_date: commentDate };
+
+  Books.findOne({ _id: bookId }, (err, data) => {
     // if id exist
     if (data) {
-      // create update object
-      let objForUpdate = {};
-
-      // add to the update object if user submitted any edits for the following: 
-      if (issueTitle) objForUpdate.issue_title = issueTitle;
-      if (createdBy) objForUpdate.created_by = createdBy;
-      if (issueText) objForUpdate.issue_text = issueText;
-      if (assignedTo) objForUpdate.assigned_to = assignedTo
-      if (statusText) objForUpdate.status_text = statusText;
-      if (changeStatus === "true") objForUpdate.open = true
-      if (changeStatus === "false") objForUpdate.open = false
-
-      // only update if objectForUpdate has greater than zero elements
-      if (Object.keys(objForUpdate).length > 0) {
-        // also edit updated date if user provided updates. 
-        objForUpdate.updated_on = new Date();
-
-        objForUpdate = { $set: objForUpdate }
-
-        Issues.updateOne({ _id: issueId }, objForUpdate, (error, updated) => {
-          if (updated) {
-            res.redirect(`/api/issues/${data._id}`)
-          }
-          else {
-            res.render(`${__dirname}/views/pug/update-result.pug`, { updateData: null })
-          }
-        })
-      }
-      // if no updates were provided
-      else {
-        res.render(`${__dirname}/views/pug/update-result.pug`, { updateData: "no-params" })
-        // res.send("No update parameters provided")
-      }
-
-      // if id does not exist
+      Books.update({ _id: bookId }, { $push: { book_comments: commentsData } }, (error, updated) => {
+        if (updated) {
+          res.redirect(`/api/books/${data._id}`)
+        }
+        else {
+          res.render(`${__dirname}/views/pug/comment-result.pug`, { updateData: null })
+        }
+      })
     }
+    // if id does not exist  
     else {
-      res.render(`${__dirname}/views/pug/update-result.pug`, { updateData: "no-id" })
+      res.render(`${__dirname}/views/pug/comment-result.pug`, { updateData: "no-id" })
     }
   })
 
 })
 
-// app.put('/api/issues/a?', (req, res) => {
-//   res.send("this is an update");
-// })
-
-// onsubmit="urlCreator()"
-// action="/api/issues/a?_method=PUT"
-
 // ----------------------------------------------------------------------------------------
-// DELETE ISSUE METHODS
+// DELETE BOOKS
 
-// from form
-app.delete('/api/issues/:id_string?', (req, res) => {
-  // res.send("test")
-  Issues.deleteOne({ _id: req.body.issueId }, (err, data) => {
-    // if id is existing delete issue
+
+// delete all books
+app.delete('/api/books?', (req, res) => {
+  Books.deleteMany({}, (err, data) => {
+    // if succesful in deleting entire library of books
     if (data) {
-      res.render(`${__dirname}/views/pug/issue-delete.pug`, { issueDeleted: true });
+      res.render(`${__dirname}/views/pug/library-delete.pug`, { libraryDeleted: true });
       // if id not existing
     } else {
-      res.render(`${__dirname}/views/pug/issue-delete.pug`, { issueDeleted: false });
+      res.render(`${__dirname}/views/pug/library-delete.pug`, { libraryDeleted: false });
+    }
+  })
+
+})
+
+
+// delete single book
+app.delete('/api/books/:id_string?', (req, res) => {
+  Books.deleteOne({ _id: req.body.bookId }, (err, data) => {
+    // if id is existing delete book
+    if (data) {
+      res.render(`${__dirname}/views/pug/book-delete.pug`, { bookDeleted: true });
+      // if id not existing
+    } else {
+      res.render(`${__dirname}/views/pug/book-delete.pug`, { bookDeleted: false });
     }
   });
-})
+});
+
 
 
 

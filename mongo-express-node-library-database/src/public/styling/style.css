@@ -67,11 +67,8 @@ form {
 @media (max-width: 1000px) {
   form {
     margin: 10px 80px;
-  }
-
- 
+  } 
 }
-
 
 h3{
   text-align: center;
@@ -122,7 +119,6 @@ th {
   text-align: left;
   font-weight: normal;
 }
-
 
 .comment-text{
   width: 500px;

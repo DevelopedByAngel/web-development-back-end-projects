@@ -1,0 +1,127 @@
+body {
+  background-color: #222;
+  color: #ddd;
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 15px;
+}
+
+h1 {
+  font-size: 35px;
+}
+
+h2 {
+  margin: 30px 0 10px 0;
+}
+s
+.input-area {
+  font-weight: bold;
+}
+input {
+  font-size: inherit;
+}
+
+.submit-button {
+  margin-top: 10px;
+  font-size: 18px;
+  -webkit-appearance: none;
+}
+
+li {
+  margin: 20px 0 10px 0;
+  font-weight: bold;
+}
+
+a:link {
+  color: inherit;
+}
+
+a:visited {
+  color: inherit;
+}
+
+a:hover {
+  font-weight: bold;
+}
+
+.author {
+  font-weight: bold;
+}
+
+form {
+  text-align: left;
+  border: 2px solid white ;
+  width: fit-content;
+  margin: 10px 20px;
+  padding: 10px;
+}
+
+
+.try-it-out{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  
+}
+
+@media (max-width: 1000px) {
+  form {
+    margin: 10px 80px;
+  } 
+}
+
+h3{
+  text-align: center;
+}
+
+.submit-area{
+  text-align: center;
+}
+
+
+.book-box{
+  border: 5px solid white;
+  margin: 2px
+}
+
+.issue-options{
+  font-weight: bold; 
+}
+
+.book-list-button{
+  border: none;
+  text-align: center;
+  margin:auto;
+}
+
+.comment-table {
+  margin:auto;
+  
+}
+
+th {
+  border: 1px solid white;
+  text-align: center;
+  vertical-align: bottom;
+  width: 100px;
+  padding-left: 5px;
+}
+
+.comment-header{
+  font-weight: bold;  
+  height: 40px;
+  
+}
+
+.comment-details > th {
+  height: 80px;
+  vertical-align: middle;
+  text-align: left;
+  font-weight: normal;
+}
+
+.comment-text{
+  width: 500px;
+}
+
+

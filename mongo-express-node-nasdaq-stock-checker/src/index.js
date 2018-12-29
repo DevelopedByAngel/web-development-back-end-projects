@@ -56,10 +56,10 @@ const Stocks = mongoose.model('Stocks', stocksSchema);
 app.get('/', (req, res) => {
   Stocks.find()
     .select('-__v')
-    .sort({ created_on: -1 })
+    .sort({ stock_symbol: 1 })
     .exec((err, data) => {
       if (data) {
-        res.render(`${__dirname}/views/pug/index.pug`, { booksDocs: data });
+        res.render(`${__dirname}/views/pug/index.pug`, { stocksDocs: data });
       } else {
         res.render('Error Loading Home Page');
       }
@@ -153,10 +153,16 @@ const databaseCheck = (stock, ip, like) =>
 //  PROCESS GET FOR STOCK REQUEST
 
 app.get('/api/stock-prices?', async (req, res) => {
-  // { stock: [ 'dsf', 'aadsf' ], like: 'true' }
-  let { stock, like } = req.query;
-  const prices = [];
-  const stockLikes = [];
+  const { like } = req.query;
+  let { stock } = req.query;
+  const stockData = {};
+  const stockPrices = {};
+
+  // IF SINGLE STOCK SUBMISSION
+  // if single stock request then make it a stock a list so that stock[0] = stock for API request
+  if (typeof stock === 'string') {
+    stock = [stock];
+  }
 
   // IP
   let { ip } = req;
@@ -164,27 +170,36 @@ app.get('/api/stock-prices?', async (req, res) => {
     ip = ip.substr(7);
   }
 
-  // if single stock request then make it a stock a list so that stock[0] = stock for API request
-  if (typeof stock === 'string') {
-    stock = [stock];
+  for (let i = 0; i < stock.length; i += 1) {
+    stock[i] = stock[i].toUpperCase();
+    stockData[stock[i]] = await getStockPrice(stock[i]);
+    // extract current price from json(API response)
+    stockPrices[stock[i]] = stockData[stock[i]]['Global Quote']['05. price'];
+    // check if stockPrices is valid(if stock is not existing in API it will be undefined)
+    // if stock price not exisitng in API send invalid price as JSON info
+    if (stockPrices[stock[i]] === undefined) {
+      res.json({
+        stockData: {
+          stock: stockPrices[stock[i]],
+          price: 'INVALID STOCK SYMBOL'
+        }
+      });
+      return;
+    }
+
+    // check database for stock info and update if necessary.
+    await databaseCheck(stock[i], ip, like);
   }
 
-  const stockData = await getStockPrice(stock[0]);
-
-  // extract current price from json(API response)
-  const stockPrice = stockData['Global Quote']['05. price'];
-  // check if stockPrice is valid(if stock is not existing in API it will be undefined)
-  if (stockPrice !== undefined) {
-    // check database for stock info and update if necessary.
-    await databaseCheck(stock[0], ip, like);
-
+  // Data presented if single stock
+  if (stock.length === 1) {
     // Once database is updated find the stock in the updated database and then send json info.
     Stocks.findOne({ stock_symbol: stock[0] }, (err, data) => {
       if (data) {
         res.json({
           stockData: {
             stock: data.stock_symbol,
-            price: stockPrice,
+            price: stockPrices[stock[0]],
             likes: data.stock_likes.length
           }
         });
@@ -194,13 +209,67 @@ app.get('/api/stock-prices?', async (req, res) => {
     });
   }
 
-  // if stock price not exisitng in API send invalid price as JSON info
-  res.json({
-    stockData: {
-      stock: stock[0],
-      price: 'INVALID STOCK SYMBOL'
+  // Data presented if 2 stocks are submitted
+  if (stock.length === 2) {
+    Stocks.find({ stock_symbol: { $in: stock } }, (err, data) => {
+      if (data) {
+        res.json({
+          stockData: [
+            {
+              stock: data[0].stock_symbol,
+              price: stockPrices[data[0].stock_symbol],
+              rel_likes: data[0].stock_likes.length - data[1].stock_likes.length
+            },
+            {
+              stock: data[1].stock_symbol,
+              price: stockPrices[data[1].stock_symbol],
+              rel_likes: data[1].stock_likes.length - data[0].stock_likes.length
+            }
+          ]
+        });
+      } else {
+        console.log('Error fetching stocks in datagbase to show as JSON');
+      }
+    });
+  }
+});
+
+// ----------------------------------------------------------------------------------------
+//  DELETE STOCKS FROM DATABASE
+
+// delete all books
+app.delete('/api/stocks/delete/allstocks?', (req, res) => {
+  Stocks.deleteMany({}, (err, data) => {
+    // if succesful in deleting entire stock database
+    if (data) {
+      res.render(`${__dirname}/views/pug/all-stock-delete.pug`, {
+        stockDeleted: true
+      });
+      // if stock database delete failed
+    } else {
+      res.render(`${__dirname}/views/pug/all-stock-delete.pug`, {
+        stockDeleted: false
+      });
     }
   });
 });
 
+// delete single book
+app.delete('/api/stocks/delete/:stock_string?', (req, res) => {
+  Stocks.deleteOne({ stock_symbol: req.body.stockSymbol }, (err, data) => {
+    // if stock exist
+    if (data) {
+      res.render(`${__dirname}/views/pug/stock-delete.pug`, {
+        stockDeleted: true
+      });
+      // if stock does not exist
+    } else {
+      res.render(`${__dirname}/views/pug/stock-delete.pug`, {
+        stockDeleted: false
+      });
+    }
+  });
+});
+
+// ----------------------------------------------------------------------------------------
 /* Coded by Niccolo Lampa. Email: niccololampa@gmail.com */

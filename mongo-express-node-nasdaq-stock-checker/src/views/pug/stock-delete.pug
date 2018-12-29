@@ -5,15 +5,15 @@ html(lang="en")
 head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width,initial-scale=1")
-    title Mongo & Express Book Library Delete Book
+    title Mongo & Express Stock Delete
     link(rel="stylesheet" href="/styling/style.css")
 
 
 body
-    if bookDeleted
-        p Book is deleted
+    if stockDeleted
+        p Stock is deleted
     else
-        p Book ID does not exist
+        p Stock Symbol does not exist in database
 
     p  
         a(href="/") Back To Home

@@ -14,7 +14,11 @@ body
     
     div(class="project-details")
         h2 DETAILS
-        li Returns the stock price and the likes of a NASDAQ Stocks
+        li Uses Alpha Vantage stock API to get latest stock prices 
+        li Returns information detailing a NASDAQstock price and the number of likes
+        li If two NASDAQ stocks are submitted prices plus the difference between the likes of the two stocks is returned.
+        li An IP address can't like the same stock more than once.
+        li
     
     h2 TRY IT OUT
     div(class="try-it-out")        
@@ -25,7 +29,7 @@ body
                     div(class="form-area form-area-one")
                         p
                             label(class="form-label" for="stock") NASDAQ Stock Symbol: 
-                            input(name="stock" id="updateSymbolOne" placeholder="stock symbol" required)                       
+                            input(name="stock" id="updateSymbolOne" placeholder="ex. GOOG" required)                       
 
                     div(class="form-area form-area-two")
                         input(type="checkbox" name="like" value="true")
@@ -43,13 +47,13 @@ body
                     div(class="form-area form-area-one")
                         p
                             label(class="form-label" for="stock") NASDAQ Stock Symbol: 
-                            input(name="stock" id="updateSymbolTwo" placeholder="stock symbol 1" required) 
+                            input(name="stock" id="updateSymbolTwo" placeholder="ex. GOOG" required) 
                                                 
 
                     div(class="form-area form-area-two")
                          p
                             label(class="form-label" for="stock") NASDAQ Stock Symbol: 
-                            input(name="stock" id="updateSymbolThree" placeholder="stock symbol 2" required) 
+                            input(name="stock" id="updateSymbolThree" placeholder="ex. AAPL" required) 
                     
                     div(class="form-area form-area-two")
                         input(type="checkbox" name="like" value="true")
@@ -61,53 +65,30 @@ body
 
         div(class="try-sec delete-book")
             form(id="deleteStockForm" method="POST" onsubmit="urlCreatorDel()")
-                h3 Delete Stock Info
+                h3 Delete Stock in Database 
                 div(class="input-area")
                     div(class="form-area form-area-one")
-                        label(class="form-label" for="bookId") NASDAQ Stock Symbol: 
-                        input(name="bookId" id="deleteId" placeholder="stock symbol" required)
+                        label(class="form-label" for="stockSymbol") NASDAQ Stock Symbol: 
+                        input(name="stockSymbol" id="deleteStockSymbol" placeholder="ex. GOOG" required)
 
                 div(class="submit-area")
                     input(class="submit-button" type="submit" value="Delete")
 
-            form(id="deleteAllBooks" method="POST" action="/api/books?_method=DELETE")
-                h3 Delete All Stocks Info
+            form(id="deleteAllBooks" method="POST" action="api/stocks/delete/allstocks?_method=DELETE")
+                h3 Delete All Stocks in Database 
                 div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Delete All")          
+                    input(class="submit-button" type="submit" value="Delete All")       
+
+    div(class="stock-database")
+        h2 STOCK LIKES COUNT (ALPHABETICALLY ARRANGED)
+        
+        each stock, index in stocksDocs
+            div(class= 'stock-box')
+                div
+                    p <strong>#{stocksDocs[index].stock_symbol}</strong>: #{stocksDocs[index].stock_likes.length} 
                
+                
                 
     
-    //- div(class="book-database")
-    //-     h2 STOCK LIST (MOST LIKED SHOWN)       
-        
-    //-     each book, index in booksDocs
-    //-         div(class= 'book-box')
-    //-             div
-    //-                 p <strong>BOOK ID</strong>: #{booksDocs[index]._id}
-
-    //-             div
-    //-                 p <strong>TITLE</strong>: #{booksDocs[index].book_title}
-                
-    //-             div
-    //-                 p <strong>AUTHOR</strong>:  #{booksDocs[index].book_author} 
-
-    //-             div
-    //-                 p <strong>DETAILS</strong>: #{booksDocs[index].book_details}
-    //-                 -  var postDate = booksDocs[index].created_on
-
-    //-                 p <strong>POST DATE</strong>: #{postDate.getFullYear()+ "-" +(postDate.getMonth()+1) + "-" + postDate.getDate()} 
-               
-    //-             div
-    //-                 p <strong>COMMENTS</strong>: #{booksDocs[index].book_comments.length}
-               
-    //-             div                
-    //-                 form(class="book-list-button" method="GET" action= '/api/books/'+ booksDocs[index]._id)
-    //-                     input(name="bookId" type="hidden" value=booksDocs[index]._id )
-    //-                     input(class="submit-button" type="submit" value="See Comments")
-    //-             div
-    //-                 form(class="book-list-button" method="POST" action= '/api/books/'+ booksDocs[index]._id +'?_method=DELETE')
-    //-                     input(name="bookId" type="hidden" value=booksDocs[index]._id )
-    //-                     input(class="submit-button" type="submit" value="Delete")
- 
 script(src="/js/form.js")
 

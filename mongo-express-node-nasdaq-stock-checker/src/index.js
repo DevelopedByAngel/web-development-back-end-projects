@@ -86,54 +86,79 @@ const getStockPrice = stock => {
   });
 };
 
-// ----------------------------------------------------------------------------------------
-// CHECK IF IP IS INCLUDED IN STOCK'S LIKES ALREADY
+// -------------------------------------------------------------------------
+// UPLOAD NEW STOCK IN THE DATABASE
 
-const ipExistCheck = (stock, ip) => {
-  Stocks.findOne({ stock_symbol: stock }, (err, data) => {
-    if (data) {
-      if (data.stock_likes.indexOf(ip) > -1) {
-        return true;
+const newStock = (stock, ip, like) => {
+  const stockUploaded = new Stocks({
+    stock_symbol: stock,
+    stock_likes: like === 'true' ? [ip] : []
+  });
+
+  return new Promise((resolve, reject) => {
+    stockUploaded.save((err, data) => {
+      if (data) {
+        resolve(console.log('new stock uploaded'));
+      } else {
+        reject(console.log('new stock upload failed '));
       }
-      return false;
-    }
-
-    return false;
+    });
   });
 };
 
 // ----------------------------------------------------------------------------------------
-//  CHECK IF STOCK IN THE DATABASE IF LIKED. IF YES UPSERT DATABASE
+//  UPDATE THE LIKES OF A STOCK
 
-const updateLikesDatabase = (stock, like, ip) => {
-  console.log('updating');
+const updateLikesDatabase = (stock, ip) => {
+  console.log('updating database');
   // upload if existing and if liked insert IP address to stock_likes list
 
-  const status = ipExistCheck(stock, ip);
-
-  Stocks.updateOne(
-    { stock_symbol: stock },
-    like === 'true' ? { $push: { stock_likes: ip } } : {},
-    { upsert: true },
-    (err, data) => {
-      if (err) {
-        console.log(err);
+  return new Promise((resolve, reject) => {
+    Stocks.updateOne(
+      { stock_symbol: stock },
+      { $push: { stock_likes: ip } },
+      (err, data) => {
+        if (data) {
+          resolve(console.log('database updated for like'));
+        } else {
+          reject(console.log('database update failed for like '));
+        }
       }
-    }
-  );
+    );
+  });
 };
 
 // ----------------------------------------------------------------------------------------
-//  PROCESS GET FOR STOCK input is ID
+// CHECK IF STOCK IS ALREADY IN THE DATABASE
 
-app.get('/api/stock-prices?', (req, res) => {
+const databaseCheck = (stock, ip, like) =>
+  new Promise((resolve, reject) => {
+    Stocks.findOne({ stock_symbol: stock }, (err, data) => {
+      // if stock is in database
+      if (data) {
+        // if liked and IP does not exist in data yet update likes
+        if (like === 'true' && data.stock_likes.indexOf(ip) === -1) {
+          resolve(updateLikesDatabase(stock, ip));
+        } else {
+          resolve(console.log('no update required. just show prices'));
+        }
+      } else {
+        // if stock in not in database upload
+        resolve(newStock(stock, ip, like));
+      }
+    });
+  });
+
+// ----------------------------------------------------------------------------------------
+//  PROCESS GET FOR STOCK REQUEST
+
+app.get('/api/stock-prices?', async (req, res) => {
   // { stock: [ 'dsf', 'aadsf' ], like: 'true' }
   let { stock, like } = req.query;
   const prices = [];
   const stockLikes = [];
 
   // IP
-
   let { ip } = req;
   if (ip.substr(0, 7) === '::ffff:') {
     ip = ip.substr(7);
@@ -144,66 +169,38 @@ app.get('/api/stock-prices?', (req, res) => {
     stock = [stock];
   }
 
-  getStockPrice(stock[0]).then(
-    //
-    response => {
-      // extract current price from json(API response)
-      const stockPrice = response['Global Quote']['05. price'];
-      // check if stockPrice is valid(if stock is not existing in API it will be undefined)
-      if (stockPrice !== undefined) {
-        // call the updatelikes database function. Which will update the database if stock is liked
-        updateLikesDatabase(stock[0], like, ip);
+  const stockData = await getStockPrice(stock[0]);
+
+  // extract current price from json(API response)
+  const stockPrice = stockData['Global Quote']['05. price'];
+  // check if stockPrice is valid(if stock is not existing in API it will be undefined)
+  if (stockPrice !== undefined) {
+    // check database for stock info and update if necessary.
+    await databaseCheck(stock[0], ip, like);
+
+    // Once database is updated find the stock in the updated database and then send json info.
+    Stocks.findOne({ stock_symbol: stock[0] }, (err, data) => {
+      if (data) {
+        res.json({
+          stockData: {
+            stock: data.stock_symbol,
+            price: stockPrice,
+            likes: data.stock_likes.length
+          }
+        });
+      } else {
+        console.log('Error in fetching stock in database to show as JSON ');
       }
-      // Once database is updated find the stock symbol
-      Stocks.findOne({ stock_symbol: stock[0] }, (err, data) => {
-        if (data) {
-          res.json({
-            stockData: {
-              stock: stock[0],
-              price:
-                stockPrice === undefined
-                  ? 'Stock Symbol Not Valid'
-                  : stockPrice,
-              likes: data.stock_likes.length
-            }
-          });
-        } else {
-          console.log('erorro in stock fin');
-        }
-      });
-    },
+    });
+  }
 
-    // error in the async
-    error => {
-      console.log(error);
+  // if stock price not exisitng in API send invalid price as JSON info
+  res.json({
+    stockData: {
+      stock: stock[0],
+      price: 'INVALID STOCK SYMBOL'
     }
-  );
-
-  // send JSON
+  });
 });
 
 /* Coded by Niccolo Lampa. Email: niccololampa@gmail.com */
-
-// Books.findOne({ _id: req.params.id_string }, (err, data) => {
-//   if (data) {
-//     // res.send(data)
-//     res.render(`${__dirname}/views/pug/book-info.pug`, { bookData: data })
-//   }
-//   // if id does not exist in database
-//   else {
-//     res.render(`${__dirname}/views/pug/book-info.pug`, { bookData: null })
-//     // res.send("Issue Id does not exist")
-//   }
-// })
-
-// // post Stock in the database
-// const stockUploaded = new Stocks({ stock_symbol: stock, stock_likes: [] })
-// stockUploaded.save((err, data) => {
-//   if (err) {
-//     res.send("upload error")
-//   }
-//   else {
-//     // res.json({ stock_symbol: data.stock_symbol, likes: data.stock_likes.length })
-//     stockLikes.push(data.stock_likes.length)
-//   }
-// });

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+html(lang="en")
+
+head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    title Mongo & Express Stock Info
+    link(rel="stylesheet" href="/styling/style.css")
+
+
+body
+
+
+    
+    if stockData
+       
+        div
+            p <strong>Stock</strong>: #{stockData[0].stock_symbol}
+
+        div
+            p <strong>Price</strong>: #{stockPrices[stockData[0].stock_symbol]}
+        
+        div
+            p <strong>Relative Likes</strong>:  #{stockData[0].stock_likes.length - stockData[1].stock_likes.length} 
+
+        div
+            p <strong>Stock</strong>: #{stockData[1].stock_symbol}
+
+        div
+            p <strong>Price</strong>: #{stockPrices[stockData[1].stock_symbol]}
+        
+        div
+            p <strong>Relative Likes</strong>:  #{stockData[1].stock_likes.length - stockData[0].stock_likes.length} 
+       
+                            
+
+    else
+        p Error retrieving stock in database
+
+    p  
+        a(href="/") BACK TO HOME

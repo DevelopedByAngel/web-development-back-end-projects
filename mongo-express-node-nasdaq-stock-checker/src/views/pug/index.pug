@@ -15,10 +15,9 @@ body
     div(class="project-details")
         h2 DETAILS
         li Uses Alpha Vantage stock API to get latest stock prices 
-        li Returns information detailing a NASDAQstock price and the number of likes
-        li If two NASDAQ stocks are submitted prices plus the difference between the likes of the two stocks is returned.
+        li Returns information detailing a NASDAQ stock price and the number of likes
+        li If two NASDAQ stocks are submitted prices and the difference between the likes of the two stocks is returned.
         li An IP address can't like the same stock more than once.
-        li
     
     h2 TRY IT OUT
     div(class="try-it-out")        
@@ -41,8 +40,8 @@ body
                 
 
         div(class="try-sec update-stock")
-            form(id="commentBookForm" method="GET" action="/api/stock-prices")
-                h3 Request Stocks and Compare the Relative Likes 
+            form(id="compareStocksForm" method="GET" action="/api/stock-prices")
+                h3 Compare Stocks
                 div(class="input-area")
                     div(class="form-area form-area-one")
                         p
@@ -60,24 +59,24 @@ body
                         label(class="form-label" for="like") Like both stock                
                                 
                 div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Request")
+                    input(class="submit-button" type="submit" value="Compare")
                 
+        //- HIDE FOR NOW SO IN LIVE DEMO STOCKS CANNOT BE DELETED TO SHOW FULL CAPABILITY OF WEBSITE FOR STOCK LIKES.
+        //- div(class="try-sec delete-book")
+        //-     form(id="deleteStockForm" method="POST" onsubmit="urlCreatorDel()")
+        //-         h3 Delete Stock in Database 
+        //-         div(class="input-area")
+        //-             div(class="form-area form-area-one")
+        //-                 label(class="form-label" for="stockSymbol") NASDAQ Stock Symbol: 
+        //-                 input(name="stockSymbol" id="deleteStockSymbol" placeholder="ex. GOOG" required)
 
-        div(class="try-sec delete-book")
-            form(id="deleteStockForm" method="POST" onsubmit="urlCreatorDel()")
-                h3 Delete Stock in Database 
-                div(class="input-area")
-                    div(class="form-area form-area-one")
-                        label(class="form-label" for="stockSymbol") NASDAQ Stock Symbol: 
-                        input(name="stockSymbol" id="deleteStockSymbol" placeholder="ex. GOOG" required)
+        //-         div(class="submit-area")
+        //-             input(class="submit-button" type="submit" value="Delete")
 
-                div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Delete")
-
-            form(id="deleteAllBooks" method="POST" action="api/stocks/delete/allstocks?_method=DELETE")
-                h3 Delete All Stocks in Database 
-                div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Delete All")       
+        //-     form(id="deleteAllBooks" method="POST" action="api/stocks/delete/allstocks?_method=DELETE")
+        //-         h3 Delete All Stocks in Database 
+        //-         div(class="submit-area")
+        //-             input(class="submit-button" type="submit" value="Delete All")       
 
     div(class="stock-database")
         h2 STOCK LIKES COUNT (ALPHABETICALLY ARRANGED)

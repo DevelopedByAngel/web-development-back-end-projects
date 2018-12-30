@@ -196,15 +196,25 @@ app.get('/api/stock-prices?', async (req, res) => {
     // Once database is updated find the stock in the updated database and then send json info.
     Stocks.findOne({ stock_symbol: stock[0] }, (err, data) => {
       if (data) {
-        res.json({
-          stockData: {
-            stock: data.stock_symbol,
-            price: stockPrices[stock[0]],
-            likes: data.stock_likes.length
-          }
+        res.render(`${__dirname}/views/pug/stock-single-info.pug`, {
+          stockData: data,
+          stockPrices,
+          stock
         });
+
+        // this is the code if you want the output to be purely JSON.
+        // res.json({
+        //   stockData: {
+        //     stock: data.stock_symbol,
+        //     price: stockPrices[stock[0]],
+        //     likes: data.stock_likes.length
+        // });
       } else {
-        console.log('Error in fetching stock in database to show as JSON ');
+        // console.log('Error in fetching stock in database to show as JSON ');
+        // res.send("Error in fetching stock in database to show as JSON")
+        res.render(`${__dirname}/views/pug/stock-single-info.pug`, {
+          stockData: null
+        });
       }
     });
   }
@@ -213,22 +223,33 @@ app.get('/api/stock-prices?', async (req, res) => {
   if (stock.length === 2) {
     Stocks.find({ stock_symbol: { $in: stock } }, (err, data) => {
       if (data) {
-        res.json({
-          stockData: [
-            {
-              stock: data[0].stock_symbol,
-              price: stockPrices[data[0].stock_symbol],
-              rel_likes: data[0].stock_likes.length - data[1].stock_likes.length
-            },
-            {
-              stock: data[1].stock_symbol,
-              price: stockPrices[data[1].stock_symbol],
-              rel_likes: data[1].stock_likes.length - data[0].stock_likes.length
-            }
-          ]
+        res.render(`${__dirname}/views/pug/stock-compare-info.pug`, {
+          stockData: data,
+          stockPrices,
+          stock
         });
+
+        // this is the code if you want the output to be purely JSON.
+        // res.json({
+        //   stockData: [
+        //     {
+        //       stock: data[0].stock_symbol,
+        //       price: stockPrices[data[0].stock_symbol],
+        //       rel_likes: data[0].stock_likes.length - data[1].stock_likes.length
+        //     },
+        //     {
+        //       stock: data[1].stock_symbol,
+        //       price: stockPrices[data[1].stock_symbol],
+        //       rel_likes: data[1].stock_likes.length - data[0].stock_likes.length
+        //     }
+        //   ]
+        // });
       } else {
-        console.log('Error fetching stocks in datagbase to show as JSON');
+        // console.log('Error fetching stocks in datagbase to show as JSON');
+        // res.send("Error in fetching stock in database to show as JSON")
+        res.render(`${__dirname}/views/pug/stock-compare-info.pug`, {
+          stockData: null
+        });
       }
     });
   }

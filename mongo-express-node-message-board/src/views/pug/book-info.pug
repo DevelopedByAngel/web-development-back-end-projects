@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+html(lang="en")
+
+head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    title Mongo & Express Library Book Info
+    link(rel="stylesheet" href="/styling/style.css")
+
+
+body
+    
+    if bookData
+       
+        div
+            p <strong>BOOK ID</strong>: #{bookData._id}
+
+        div
+            p <strong>TITLE</strong>: #{bookData.book_title}
+        
+        div
+            p <strong>AUTHOR</strong>:  #{bookData.book_author} 
+
+        div
+            p <strong>DETAILS</strong>: #{bookData.book_details}
+        div
+            -  var postDate = bookData.created_on
+            p <strong>POST DATE</strong>: #{postDate.getFullYear()+ "-" +(postDate.getMonth()+1) + "-" + postDate.getDate()} 
+          
+        div
+            p <strong>COMMENTS</strong>: 
+        
+        div
+            if bookData.book_comments.length ===0
+                p No comments yet
+
+            else
+                table(class="comment-table") 
+                    tr(class="comment-row comment-header")              
+                        th COMMENT BY:
+                        th DATE 
+                        th COMMENT
+
+                    each comment, index in bookData.book_comments 
+                        -  var commentDate = bookData.book_comments[index].comment_date
+                                
+                        tr(class="comment-row comment-details")     
+                            th(class="comment-author") #{bookData.book_comments[index].comment_by}
+                            th(class="comment-date") #{commentDate.getFullYear()+ "-" +(commentDate.getMonth()+1) + "-" + commentDate.getDate()}
+                            th(class="comment-text") #{bookData.book_comments[index].comment_text}
+                            
+
+    else
+        p ID does not exist
+
+    p  
+        a(href="/") BACK TO HOME

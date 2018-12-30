@@ -24,6 +24,14 @@ app.set('trust proxy', true);
 app.use(helmet());
 app.use(helmet.hidePoweredBy());
 app.use(helmet.noCache());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'trusted-cdn.com']
+    }
+  })
+);
 
 app.use(methodOverride('_method'));
 

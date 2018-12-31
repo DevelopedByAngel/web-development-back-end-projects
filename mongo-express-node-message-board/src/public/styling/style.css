@@ -13,8 +13,7 @@ h1 {
 h2 {
   margin: 30px 0 10px 0;
 }
-s
-.input-area {
+s .input-area {
   font-weight: bold;
 }
 input {
@@ -50,53 +49,49 @@ a:hover {
 
 form {
   text-align: left;
-  border: 2px solid white ;
+  border: 2px solid white;
   width: fit-content;
   margin: 10px 20px;
   padding: 10px;
 }
 
-
-.try-it-out{
+.try-it-out {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  
 }
 
 @media (max-width: 1000px) {
   form {
     margin: 10px 80px;
-  } 
+  }
 }
 
-h3{
+h3 {
   text-align: center;
 }
 
-.submit-area{
+.submit-area {
   text-align: center;
 }
 
-
-.book-box{
+.thread-box {
   border: 5px solid white;
-  margin: 2px
+  margin: 2px;
 }
 
-.issue-options{
-  font-weight: bold; 
+.issue-options {
+  font-weight: bold;
 }
 
-.book-list-button{
+.book-list-button {
   border: none;
   text-align: center;
-  margin:auto;
+  margin: auto;
 }
 
-.comment-table {
-  margin:auto;
-  
+.reply-table {
+  margin: auto;
 }
 
 th {
@@ -107,21 +102,18 @@ th {
   padding-left: 5px;
 }
 
-.comment-header{
-  font-weight: bold;  
+.reply-header {
+  font-weight: bold;
   height: 40px;
-  
 }
 
-.comment-details > th {
+.reply-details > th {
   height: 80px;
   vertical-align: middle;
   text-align: left;
   font-weight: normal;
 }
 
-.comment-text{
+.reply-text {
   width: 500px;
 }
-
-

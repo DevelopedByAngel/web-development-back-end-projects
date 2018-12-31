@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 html(lang="en")
 
-
 head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width,initial-scale=1")
-    title Mongo & Express Book Library Delete Book
+    title Mongo & Express Book Library Comment Error
     link(rel="stylesheet" href="/styling/style.css")
 
 
-body
-    if bookDeleted
-        p Book is deleted
+body        
+    
+    if reportData === "no-id"
+        p Thread ID does not exit
     else
-        p Book ID does not exist
+        p Update Error
 
     p  
         a(href="/") Back To Home

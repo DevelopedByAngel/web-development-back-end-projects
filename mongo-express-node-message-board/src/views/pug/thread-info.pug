@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+html(lang="en")
+
+head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    title Mongo & Express Library Book Info
+    link(rel="stylesheet" href="/styling/style.css")
+
+
+body
+p  
+    a(href="/") BACK TO HOME
+    
+    if threadData
+       
+        div
+            p <strong>THREAD ID</strong>: #{threadData._id}
+
+        div
+            p <strong>TITLE</strong>: #{threadData.thread_title}
+        
+        div
+            p <strong>AUTHOR</strong>:  #{threadData.thread_author} 
+
+        div
+            p <strong>DETAILS</strong>: #{threadData.thread_details}
+        div
+            -  var postDate = threadData.thread_date
+            p <strong>POST DATE</strong>: #{postDate.getFullYear()+ "-" +(postDate.getMonth()+1) + "-" + postDate.getDate()} 
+          
+        div
+            p <strong>REPORTS</strong>: #{threadData.thread_reports}
+
+        div(class="try-sec submit-form")
+            form(id="createReplyForm" method="POST" action= "/api/replies/")
+                h3 Reply to Thread
+                div(class="input-area")
+                    div(class="form-area form-area-one")                        
+                        p
+                            label(class="form-label" for="replyAuthor") Author: 
+                            input(name="replyAuthor" placeholder="reply author" required)  
+                        p
+                            label(class="form-label" for="replyPassword") Password: 
+                            input(name="replyPassword" placeholder="password to delete reply" required)                         
+
+                    div(class="form-area form-area-two")
+                        p
+                            label(class="form-label" for="replyDetails") Reply Text:
+                        p
+                            textarea(name="replyDetails" rows="5" cols="50" required)
+                            input(name="threadId" type="hidden" value=threadData._id )
+                    
+                
+                div(class="submit-area")
+                    input(class="submit-button" type="submit" value="Post Reply")
+    
+        
+        div
+            p <strong>REPLIES</strong>: 
+        
+        div
+            if threadData.thread_replies.length ===0
+                p No replies yet
+
+            else
+                table(class="reply-table") 
+                    tr(class="reply-row reply-header")              
+                        th REPLY BY:
+                        th DATE 
+                        th REPLY
+                        th REPORT
+                        th DELETE
+
+                    each reply, index in threadData.thread_replies 
+                        -  var replyDate = threadData.thread_replies[index].reply_date
+                                
+                        tr(class="reply-row reply-details")     
+                            th(class="reply-author") #{threadData.thread_replies[index].reply_by}
+                            th(class="reply-date") #{replyDate.getFullYear()+ "-" +(replyDate.getMonth()+1) + "-" + replyDate.getDate()}
+                            th(class="reply-text") #{threadData.thread_replies[index].reply_text}
+                            th
+                                #{threadData.thread_replies[index].reply_reports}
+                                form(class="thread-list-button" method="POST" action= '/api/replies/'+ threadData.thread_replies[index]._id+'?_method=PUT')
+                                    input(name="replyId" type="hidden" value=threadData.thread_replies[index]._id )
+                                    input(name="threadId" type="hidden" value=threadData._id )
+                                    input(class="submit-button" type="submit" value="Report")
+                            th 
+                                form(class="thread-list-button" method="POST" action= '/api/replies/'+ threadData.thread_replies[index]._id+'?_method=DELETE')
+                                    input(name="replyId" type="hidden" value=threadData.thread_replies[index]._id )
+                                    input(name="threadId" type="hidden" value=threadData._id )
+                                    
+                                    p
+                                        input(name="replyPassword" placeholder="password" required) 
+                                    p
+                                        input(class="submit-button" type="submit" value="Delete Thread")
+
+        
+        
+                            
+
+    else
+        p ID does not exist
+
+    

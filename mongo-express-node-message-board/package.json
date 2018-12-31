@@ -1,13 +1,13 @@
 {
-  "name": "mongo-express-node-library-database",
+  "name": "mongo-express-node-message-board",
   "version": "1.0.0",
-  "description": "Book library database ",
+  "description": "Message board database database ",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "issue",
+    "message board",
     "tracker",
     "mongo",
     "express",

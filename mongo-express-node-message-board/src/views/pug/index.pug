@@ -10,120 +10,159 @@ head
 
 body
     div(class="title")
-        h1 MongoDB, Mongoose, Express & Pug Book Library 
+        h1 MongoDB, Mongoose, Express & Pug Message Board
     
     div(class="project-details")
         h2 DETAILS
-        li Shows existing books and the comments on books
+        li A message board which allows users to post a thread and reply to a thread. 
+        li Uses bcrypt to hash passwords to delete thread and topics 
     
     h2 TRY IT OUT
     div(class="try-it-out")        
-        div(class="try-sec submit-book")
-            form(id="submitBookForm" method="POST" action="/api/books/")
-                h3 Submit Book
+        div(class="try-sec submit-form")
+            form(id="createThreadForm" method="POST" action="/api/threads/")
+                h3 Create Thread
                 div(class="input-area")
                     div(class="form-area form-area-one")
                         p
-                            label(class="form-label" for="bookTitle") Book Title:   
-                            input(name="bookTitle" placeholder="title" required)
+                            label(class="form-label" for="threadTitle") Thread Title:   
+                            input(name="threadTitle" placeholder="title" required)
                         p
-                            label(class="form-label" for="bookAuthor") Book Author: 
-                            input(name="bookAuthor" placeholder="author" required)                        
+                            label(class="form-label" for="threadAuthor") Author: 
+                            input(name="threadAuthor" placeholder="thread author" required)  
+                        p
+                            label(class="form-label" for="threadPassword") Password: 
+                            input(name="threadPassword" placeholder="password to delete thread" required)                         
 
                     div(class="form-area form-area-two")
                         p
-                            label(class="form-label" for="bookDetails") Book Details:
+                            label(class="form-label" for="threadDetails") Thread Details:
                         p
-                            textarea(name="bookDetails" rows="5" cols="50" required)
+                            textarea(name="threadDetails" rows="5" cols="50" required)
                     
                
                 div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Submit")
+                    input(class="submit-button" type="submit" value="Create")
                 
 
-        div(class="try-sec update-book")
-            form(id="commentBookForm" method="POST" onSubmit="urlCreatorPut()")
-                h3 Comment on Book
+        div(class="try-sec get-form")
+            form(id="getThreadForm" method="GET" onsubmit="urlCreatorGet()")
+                h3 Go to Thread
+                div(class="input-area")
+                    div(class="form-area form-area-one")
+                        label(class="form-label" for="threadId") Thread ID: 
+                        input(name="threadId" id="getId" placeholder="thread id" required)
+
+                div(class="submit-area")
+                    input(class="submit-button" type="submit" value="Go to Thread")
+
+        div(class="try-sec report-form")
+            form(id="reportThreadForm" method="POST" onSubmit="urlCreatorPut()")
+                h3 Report Thread
                 div(class="input-area")
                     div(class="form-area form-area-one")
                         p
-                            label(class="form-label" for="bookId") Book ID: 
-                            input(name="bookId" id="updateId" placeholder="book id" required) 
-                        p
-                            label(class="form-label" for="commentBy") Comment By: 
-                            input(name="commentBy" placeholder="comment author" required)                          
+                            label(class="form-label" for="threadId") Thread ID: 
+                            input(name="threadId" id="updateId" placeholder="thread id" required) 
+                    //-     p
+                    //-         label(class="form-label" for="threadAuthor") Author: 
+                    //-         input(name="reportBy" placeholder="report author" required)                                             
 
-                    div(class="form-area form-area-two")
-                        p
-                            label(class="form-label" for="commentText") Book Comment: 
-                        p                        
-                            textarea(name="commentText" rows="5" cols="50" required)
+                    //- div(class="form-area form-area-two")
+                    //-     p
+                    //-         label(class="form-label" for="reportText") Report Details: 
+                    //-     p                        
+                    //-         textarea(name="reportText" rows="5" cols="50" required)
                 
                 div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Comment")
+                    input(class="submit-button" type="submit" value="Report")
                 
 
-        div(class="try-sec delete-book")
-            form(id="deleteBookForm" method="POST" onsubmit="urlCreatorDel()")
-                h3 Delete Book
+        div(class="try-sec delete-form")
+            form(id="deleteThreadForm" method="POST" onsubmit="urlCreatorDel()")
+                h3 Delete Thread
                 div(class="input-area")
                     div(class="form-area form-area-one")
-                        label(class="form-label" for="bookId") Book ID: 
-                        input(name="bookId" id="deleteId" placeholder="book id" required)
+                        p
+                            label(class="form-label" for="threadId") Thread ID: 
+                            input(name="threadId" id="deleteId" placeholder="thread id" required)
+
+                        p
+                            label(class="form-label" for="threadPassword") Password: 
+                            input(name="threadPassword" placeholder="password to delete thread" required)  
 
                 div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Delete")
-
-            form(id="deleteAllBooks" method="POST" action="/api/books?_method=DELETE")
-                h3 Delete All Books
-                div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Delete All")
-
-           
+                    input(class="submit-button" type="submit" value="Delete")          
         
-        div(class="try-sec get-book")
-            form(id="getBookForm" method="GET" onsubmit="urlCreatorGet()")
-                h3 Get Book
-                div(class="input-area")
-                    div(class="form-area form-area-one")
-                        label(class="form-label" for="bookId") Book ID: 
-                        input(name="bookId" id="getId" placeholder="book id" required)
-
-                div(class="submit-area")
-                    input(class="submit-button" type="submit" value="Get Book")
+        
                 
     
-    div(class="book-database")
-        h2 BOOK LIST (LATEST SHOWN FIRST)       
+    div(class="thread-database")
+        h2 THREAD LIST (LATEST SHOWN FIRST)       
         
-        each book, index in booksDocs
-            div(class= 'book-box')
+        each thread, index in threadDocs
+            div(class= 'thread-box')
                 div
-                    p <strong>BOOK ID</strong>: #{booksDocs[index]._id}
+                    p <strong>THREAD ID</strong>: #{threadDocs[index]._id}
 
                 div
-                    p <strong>TITLE</strong>: #{booksDocs[index].book_title}
+                    p <strong>TITLE</strong>: #{threadDocs[index].thread_title}
                 
                 div
-                    p <strong>AUTHOR</strong>:  #{booksDocs[index].book_author} 
+                    p <strong>AUTHOR</strong>:  #{threadDocs[index].thread_author} 
 
                 div
-                    p <strong>DETAILS</strong>: #{booksDocs[index].book_details}
-                    -  var postDate = booksDocs[index].created_on
+                    p <strong>DETAILS</strong>: #{threadDocs[index].thread_details}
+                    -  var postDate = threadDocs[index].thread_date
 
                     p <strong>POST DATE</strong>: #{postDate.getFullYear()+ "-" +(postDate.getMonth()+1) + "-" + postDate.getDate()} 
+                
+                div
+                    p <strong>REPORTS</strong>: #{threadDocs[index].thread_reports}
                
                 div
-                    p <strong>COMMENTS</strong>: #{booksDocs[index].book_comments.length}
+                    p <strong>REPLIES</strong>: #{threadDocs[index].thread_replies.length}
+
+                div
+                    if threadDocs[index].thread_replies.length ===0
+                        p 
+
+                    else
+                        table(class="reply-table") 
+                            tr(class="reply-row reply-header")              
+                                th REPLY BY:
+                                th DATE 
+                                th REPLY
+
+                            each reply, counter in threadDocs[index].thread_replies
+                                -  var replyDate = threadDocs[index].thread_replies[counter].reply_date
+                                        
+                                tr(class="reply-row reply-details")     
+                                    th(class="reply-author") #{threadDocs[index].thread_replies[counter].reply_by}
+                                    th(class="reply-date") #{replyDate.getFullYear()+ "-" +(replyDate.getMonth()+1) + "-" + replyDate.getDate()}
+                                    th(class="reply-text") #{threadDocs[index].thread_replies[counter].reply_text}
+                
+                
                
                 div                
-                    form(class="book-list-button" method="GET" action= '/api/books/'+ booksDocs[index]._id)
-                        input(name="bookId" type="hidden" value=booksDocs[index]._id )
-                        input(class="submit-button" type="submit" value="See Comments")
+                    form(class="thread-list-button" method="GET" action= '/api/threads/'+ threadDocs[index]._id)
+                        input(name="threadId" type="hidden" value=threadDocs[index]._id )
+                        input(class="submit-button" type="submit" value="See All Replies")                
+
+                div                
+                    form(class="thread-list-button" method="POST" action= '/api/threads/'+ threadDocs[index]._id+'?_method=PUT')
+                        input(name="threadId" type="hidden" value=threadDocs[index]._id )
+                        input(class="submit-button" type="submit" value="Report")
                 div
-                    form(class="book-list-button" method="POST" action= '/api/books/'+ booksDocs[index]._id +'?_method=DELETE')
-                        input(name="bookId" type="hidden" value=booksDocs[index]._id )
-                        input(class="submit-button" type="submit" value="Delete")
+                    form(class="thread-list-button" method="POST" action= '/api/threads/'+ threadDocs[index]._id +'?_method=DELETE')
+                        input(name="threadId" type="hidden" value=threadDocs[index]._id )
+                        
+                        p
+                            input(name="threadPassword" placeholder="password to delete thread" required) 
+                        p
+                            input(class="submit-button" type="submit" value="Delete Thread")
+                    
+                        
  
 script(src="/js/form.js")
 

@@ -14,8 +14,8 @@ body
     
     div(class="project-details")
         h2 DETAILS
-        li A message board which allows users to post a thread and reply to a thread. 
-        li Uses bcrypt to hash passwords to delete thread and topics 
+        li A message board which allows users to post, reply and report a thread. 
+        li Uses Bcrypt to hash passwords to delete thread and replies.
     
     h2 TRY IT OUT
     div(class="try-it-out")        
@@ -103,10 +103,10 @@ body
         each thread, index in threadDocs
             div(class= 'thread-box')
                 div
-                    p <strong>THREAD ID</strong>: #{threadDocs[index]._id}
-
-                div
                     p <strong>TITLE</strong>: #{threadDocs[index].thread_title}
+                
+                div
+                    p <strong>ID</strong>: #{threadDocs[index]._id}               
                 
                 div
                     p <strong>AUTHOR</strong>:  #{threadDocs[index].thread_author} 
@@ -134,7 +134,8 @@ body
                                 th DATE 
                                 th REPLY
 
-                            each reply, counter in threadDocs[index].thread_replies
+             
+                            each reply, counter in threadDocs[index].thread_replies.reverse().slice(0,3)
                                 -  var replyDate = threadDocs[index].thread_replies[counter].reply_date
                                         
                                 tr(class="reply-row reply-details")     
@@ -147,7 +148,7 @@ body
                 div                
                     form(class="thread-list-button" method="GET" action= '/api/threads/'+ threadDocs[index]._id)
                         input(name="threadId" type="hidden" value=threadDocs[index]._id )
-                        input(class="submit-button" type="submit" value="See All Replies")                
+                        input(class="submit-button" type="submit" value="Post / View Replies")                
 
                 div                
                     form(class="thread-list-button" method="POST" action= '/api/threads/'+ threadDocs[index]._id+'?_method=PUT')

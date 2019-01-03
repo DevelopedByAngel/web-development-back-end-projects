@@ -13,17 +13,23 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 
 // to hash password for deleting
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
 //  express app to set 'pug' as the 'view-engine'.
 app.set('view engine', 'pug');
 
-// this will include all helmet middleware
+// SERVING STATIC ASSETS
+app.use(express.static(`${__dirname}/public`));
+
+// GETTING READY FOR POST REQUEST
+app.use('/', bodyParser.urlencoded({ extended: false }));
+
+// Security helmet configuration
 app.use(helmet());
-app.use(helmet.hidePoweredBy());
 app.use(helmet.noCache());
+app.use(helmet({ frameguard: { action: 'deny' }, dnsPrefetchControl: true }));
 
 app.use(methodOverride('_method'));
 
@@ -35,12 +41,6 @@ mongoose.connect(
   process.env.MONGO_URI,
   { useNewUrlParser: true }
 );
-
-// SERVING STATIC ASSETS
-app.use(express.static(`${__dirname}/public`));
-
-// GETTING READY FOR POST REQUEST
-app.use('/', bodyParser.urlencoded({ extended: false }));
 
 // -------------------------------------------------------------------------
 // CREATE A REPLIES SCHEMA
@@ -74,7 +74,7 @@ const Threads = mongoose.model('threads', threadSchema);
 app.get('/', (req, res) => {
   Threads.find()
     .select('-__v')
-    .sort({ created_on: -1 })
+    .sort({ thread_date: -1 })
     .exec((err, data) => {
       if (data) {
         res.render(`${__dirname}/views/pug/index.pug`, { threadDocs: data });
@@ -85,7 +85,7 @@ app.get('/', (req, res) => {
 });
 
 // ----------------------------------------------------------------------------------------
-//  PROCESS GET FOR BOOK, input is ID
+//  PROCESS GET FOR THREAD, input is ID
 
 app.get('/api/threads/:board', (req, res) => {
   Threads.findOne({ _id: req.params.board }, (err, data) => {
@@ -100,7 +100,6 @@ app.get('/api/threads/:board', (req, res) => {
       res.render(`${__dirname}/views/pug/thread-info.pug`, {
         threadData: null
       });
-      // res.send("Issue Id does not exist")
     }
   });
 });
@@ -112,13 +111,17 @@ app.post('/api/threads/', (req, res) => {
   const { threadTitle, threadAuthor, threadDetails, threadPassword } = req.body;
   const dateCreated = new Date();
 
+  // hash password using bcrypt
+
+  const hash = bcrypt.hashSync(threadPassword, 12);
+
   // Upload submitted Issue to Mongo database
   const threadUploaded = new Threads({
     thread_title: threadTitle,
     thread_author: threadAuthor,
     thread_details: threadDetails,
     thread_date: dateCreated,
-    thread_password: threadPassword
+    thread_password: hash
   });
   threadUploaded.save((err, data) => {
     if (data) {
@@ -169,7 +172,8 @@ app.delete('/api/threads/:board?', (req, res) => {
 
   Threads.findOne({ _id: threadId }, (err, data) => {
     if (data) {
-      if (threadPassword !== data.thread_password) {
+      // validation of password using bcrypt
+      if (!bcrypt.compareSync(threadPassword, data.thread_password)) {
         res.send('Password to delete thread invalid');
         return;
       }
@@ -196,20 +200,39 @@ app.delete('/api/threads/:board?', (req, res) => {
 });
 
 // ---------------------------------------------------------------------
+//  PROCESS GET REPLY BOARD REQUEST
+app.get('/api/replies/:board', (req, res) => {
+  Threads.findOne({ _id: req.params.board }, (err, data) => {
+    if (data) {
+      // res.send(data)
+      res.render(`${__dirname}/views/pug/thread-info.pug`, {
+        threadData: data
+      });
+    }
+    // if id does not exist in database
+    else {
+      res.render(`${__dirname}/views/pug/thread-info.pug`, {
+        threadData: null
+      });
+    }
+  });
+});
+// ---------------------------------------------------------------------
 //  PROCESS POST REQUEST. WHEN NEW REPLY IS SUBMITTED
 app.post('/api/replies/:board?', (req, res) => {
   // get the url provided in form
   const { replyAuthor, replyDetails, replyPassword, threadId } = req.body;
   const dateCreated = new Date();
 
-  console.log(threadId);
+  // has delete password using bcrypt
+  const hash = bcrypt.hashSync(replyPassword, 12);
 
   // Upload submitted Issue to Mongo database
   const replyUploaded = new Replies({
     reply_by: replyAuthor,
     reply_text: replyDetails,
     reply_date: dateCreated,
-    reply_password: replyPassword
+    reply_password: hash
   });
 
   Threads.updateOne(
@@ -217,7 +240,7 @@ app.post('/api/replies/:board?', (req, res) => {
     { $push: { thread_replies: replyUploaded } },
     (error, data) => {
       if (data) {
-        res.redirect(`/api/threads/${data._id}`);
+        res.redirect(`/api/threads/${threadId}`);
       } else {
         res.send('Posting Reply Failed');
       }
@@ -235,8 +258,8 @@ app.put('/api/replies/:board?', (req, res) => {
     // if id exist
     if (data) {
       Threads.updateOne(
-        { _id: threadId, "thread_replies._id": },
-        { $inc: { thread_replies: { _id: replyId, reply_reports: 1 } } },
+        { _id: threadId, 'thread_replies._id': replyId },
+        { $inc: { 'thread_replies.$.reply_reports': 1 } },
         (error, updated) => {
           if (updated) {
             res.redirect(`/api/threads/${data._id}`);
@@ -257,4 +280,54 @@ app.put('/api/replies/:board?', (req, res) => {
   });
 });
 
+// ---------------------------------------------------------------------
+// DELETE REPLY USING PUT
+
+app.delete('/api/replies/:board?', (req, res) => {
+  const { threadId, replyId, replyPassword } = req.body;
+
+  Threads.findOne(
+    { _id: threadId, 'thread_replies._id': replyId },
+    { 'thread_replies.$': 1 },
+    (err, data) => {
+      if (data) {
+        // console.log(data);
+        // validation of password using bcrypt
+        if (
+          !bcrypt.compareSync(
+            replyPassword,
+            data.thread_replies[0].reply_password
+          )
+        ) {
+          res.send('Password to delete reply invalid');
+          return;
+        }
+
+        Threads.updateOne(
+          { _id: threadId, 'thread_replies._id': replyId },
+          {
+            $set: {
+              'thread_replies.$.reply_text': '***reply deleted by user***'
+            }
+          },
+          (error, updated) => {
+            if (updated) {
+              res.redirect(`/api/threads/${data._id}`);
+            } else {
+              res.render(`${__dirname}/views/pug/report-result.pug`, {
+                updateData: null
+              });
+            }
+          }
+        );
+      } else {
+        res.render(`${__dirname}/views/pug/report-result.pug`, {
+          updateData: 'no-id'
+        });
+      }
+    }
+  );
+});
+
+// ---------------------------------------------------------------------
 /* Coded by Niccolo Lampa. Email: niccololampa@gmail.com */

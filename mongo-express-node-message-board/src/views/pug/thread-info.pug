@@ -4,7 +4,7 @@ html(lang="en")
 head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width,initial-scale=1")
-    title Mongo & Express Library Book Info
+    title Mongo & Express Thread Info
     link(rel="stylesheet" href="/styling/style.css")
 
 
@@ -13,12 +13,12 @@ p
     a(href="/") BACK TO HOME
     
     if threadData
-       
-        div
-            p <strong>THREAD ID</strong>: #{threadData._id}
 
         div
-            p <strong>TITLE</strong>: #{threadData.thread_title}
+         p <strong>TITLE</strong>: #{threadData.thread_title}
+       
+        div
+            p <strong>ID</strong>: #{threadData._id}       
         
         div
             p <strong>AUTHOR</strong>:  #{threadData.thread_author} 
@@ -32,7 +32,7 @@ p
         div
             p <strong>REPORTS</strong>: #{threadData.thread_reports}
 
-        div(class="try-sec submit-form")
+        div(class="reply-thread-form-submit")
             form(id="createReplyForm" method="POST" action= "/api/replies/")
                 h3 Reply to Thread
                 div(class="input-area")
@@ -55,7 +55,18 @@ p
                 div(class="submit-area")
                     input(class="submit-button" type="submit" value="Post Reply")
     
-        
+        div                
+                form(class="thread-list-button" method="POST" action= '/api/threads/'+ threadData._id+'?_method=PUT')
+                        input(name="threadId" type="hidden" value=threadData._id )
+                        input(class="submit-button" type="submit" value="Report")
+                
+                form(class="thread-list-button" method="POST" action= '/api/threads/'+ threadData._id +'?_method=DELETE')
+                    input(name="threadId" type="hidden" value=threadData._id )
+                    
+                    p
+                        input(name="threadPassword" placeholder="password to delete thread" required) 
+                    p
+                        input(class="submit-button" type="submit" value="Delete Thread")
         div
             p <strong>REPLIES</strong>: 
         
@@ -69,10 +80,9 @@ p
                         th REPLY BY:
                         th DATE 
                         th REPLY
-                        th REPORT
-                        th DELETE
+                        th REPORT / DELETE
 
-                    each reply, index in threadData.thread_replies 
+                    each reply, index in threadData.thread_replies.reverse()
                         -  var replyDate = threadData.thread_replies[index].reply_date
                                 
                         tr(class="reply-row reply-details")     
@@ -80,12 +90,12 @@ p
                             th(class="reply-date") #{replyDate.getFullYear()+ "-" +(replyDate.getMonth()+1) + "-" + replyDate.getDate()}
                             th(class="reply-text") #{threadData.thread_replies[index].reply_text}
                             th
-                                #{threadData.thread_replies[index].reply_reports}
+                                p(class="report-number") #{threadData.thread_replies[index].reply_reports}
                                 form(class="thread-list-button" method="POST" action= '/api/replies/'+ threadData.thread_replies[index]._id+'?_method=PUT')
                                     input(name="replyId" type="hidden" value=threadData.thread_replies[index]._id )
                                     input(name="threadId" type="hidden" value=threadData._id )
                                     input(class="submit-button" type="submit" value="Report")
-                            th 
+                           
                                 form(class="thread-list-button" method="POST" action= '/api/replies/'+ threadData.thread_replies[index]._id+'?_method=DELETE')
                                     input(name="replyId" type="hidden" value=threadData.thread_replies[index]._id )
                                     input(name="threadId" type="hidden" value=threadData._id )

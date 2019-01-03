@@ -84,7 +84,7 @@ h3 {
   font-weight: bold;
 }
 
-.book-list-button {
+.thread-list-button {
   border: none;
   text-align: center;
   margin: auto;
@@ -107,6 +107,12 @@ th {
   height: 40px;
 }
 
+.reply-thread-form-submit {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .reply-details > th {
   height: 80px;
   vertical-align: middle;
@@ -116,4 +122,8 @@ th {
 
 .reply-text {
   width: 500px;
+}
+
+.report-number {
+  text-align: center;
 }

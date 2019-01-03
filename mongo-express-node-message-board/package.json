@@ -1,7 +1,7 @@
 {
   "name": "mongo-express-node-message-board",
   "version": "1.0.0",
-  "description": "Message board database database ",
+  "description": "Message board database. Uses bcrypt to hash passwords ",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +17,7 @@
   "author": "Niccolo Lampa",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",

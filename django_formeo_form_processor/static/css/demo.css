@@ -143,3 +143,47 @@
   .preview {
       display: initial;
   }
+
+  .index-content{
+    text-align: center;
+    line-height: 50px;
+
+  }
+
+  h1{
+    font-size: 50px;
+    font-weight:bold;  
+  }
+
+  h2{
+    font-size: 30px;
+    font-style: italic;
+
+  }
+
+  h3{
+    font-size: 25px;
+    
+    font-weight:bold;
+  }
+
+  .home-paragraph{
+    font-size: 20px;
+  }
+
+  .home-table, th, td {
+    border: 3px solid black;
+    border-collapse: collapse;
+  }
+
+  .home-table{
+    margin-left:auto; 
+    margin-right:auto;
+  }
+
+  .home-table th{
+    width: 300px;
+    
+  }
+
+ 

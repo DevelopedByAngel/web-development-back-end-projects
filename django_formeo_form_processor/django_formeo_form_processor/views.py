@@ -1,6 +1,8 @@
-from django.views.generic import TemplateView
+from django.shortcuts import render
+from formprocessor.models import SavedFormData
 
-class HomePage(TemplateView):
-    template_name = 'index.html'
+def index(request):
+    saved_forms = SavedFormData.objects.all().order_by("-id")
+    return render(request, "index.html", {"SavedForms": saved_forms})
 
 

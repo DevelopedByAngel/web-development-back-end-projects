@@ -1,9 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Welcome to Form Customizer</h1>
-<h2>Creating a form for your website has never been so easy</h2>
-<a href="/formprocessor/">Create a customized form here</a>
+<section class="index-content">
+    <h1>Welcome to Form Customizer</h1>
+    <h2>Creating a form for your website has never been so easy</h2>
+    <p class="home-paragraph"> <a href="/formprocessor/">Create a customized form here</a></p>
 
+    <h3>All Saved Forms</h3>
+
+    <table class="home-table">
+        <tr>
+            <th>ID</th>
+            <th> FormName</th>
+        </tr>
+
+        {% for forms in SavedForms%}
+        <tr>
+            <td>{{forms.id}} </td>
+            <td><a href="/formrender/?id={{forms.id}}">{{forms.form_name}}</a></td>
+            {% endfor %}
+        </tr>
+
+    </table>
+
+</section>
 
 {% endblock %}

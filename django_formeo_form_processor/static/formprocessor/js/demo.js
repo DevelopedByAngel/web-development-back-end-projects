@@ -102,6 +102,7 @@ let viewDataBtn = document.getElementById('viewData');
 let resetDemo = document.getElementById('reloadBtn');
 let goHomeBtn = document.getElementById('goHomeBtn');
 
+
 // debugBtn.onclick = function() {
 //   debugWrap.classList.toggle('open');
 // };
@@ -121,12 +122,12 @@ toggleEdit.onclick = evt => {
     document.body.classList.toggle('form-rendered', editing);
     document.getElementById("render-area").classList.toggle('preview');
     if (editing) {
+        document.getElementById('form_saver').hidden = true;
         formeo.render(renderContainer);
         evt.target.innerHTML = 'Edit Form';
 
-
-
     } else {
+        document.getElementById('form_saver').hidden = false;
         evt.target.innerHTML = 'Preview Form';
     }
 

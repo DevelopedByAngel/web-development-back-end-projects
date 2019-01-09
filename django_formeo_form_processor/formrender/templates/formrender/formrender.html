@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+<section id="main_content" class="inner">
+
+    <div id="formeo-editor"></div>
+
+    <!-- <div id="render-area" class="render-form preview"></div> -->
+</section>
+<div class="container render-btn-wrap">
+    <button id="goHomeBtn" class="btn btn-default">Go Back to Home</button>
+
+
+
+
+
+</div>
+
+
+</div>
+<footer id="demo-footer">
+    <nav>
+        <ul>
+            <li>
+                <a href="https://js.org" target="_blank" title="JS.ORG | JavaScript Community">
+                </a>
+            </li>
+        </ul>
+    </nav>
+</footer>
+<script type=text/javascript> let savedTemplate={{savedTemplate|safe}} </script> <script type="text/javascript" src="{% static '/formrender/js/formeo.min.js' %}"></script>
+<script type="text/javascript" src="{% static '/formrender/js/render.js' %}"></script>
+{% endblock %}
+
+
+</html>

@@ -4,13 +4,6 @@
 
 
 <section id="main_content" class="inner">
-    <form id="form_saver" method="POST">
-        {% csrf_token %}
-        <label>Form Name: </label>
-        <input id="form_name" name=form_name>
-        <input id="form_data_input" type="hidden" name=form_data>
-    </form>
-
     <form class="build-form clearfix"></form>
     <div id="render-area" class="render-form"></div>
 </section>
@@ -18,9 +11,14 @@
     <button id="goHomeBtn" class="btn btn-default">Go Back to Home</button>
     <button id="renderForm" class="btn btn-default">Preview Form</button>
     <button id="viewData" class="btn btn-default">console.log Data</button>
-    <button id="reloadBtn" class="btn btn-default">Reset Editor</button>
+
+
+
+
 </div>
 
+
+</div>
 <footer id="demo-footer">
     <nav>
         <ul>
@@ -31,6 +29,9 @@
         </ul>
     </nav>
 </footer>
-<script type="text/javascript" src="{% static '/formprocessor/js/formeo.min.js' %}"></script>
-<script type="text/javascript" src="{% static '/formprocessor/js/demo.js' %}"></script>
+<script type=text/javascript> let savedTemplate={{savedTemplate|safe}} </script> <script type="text/javascript" src="{% static '/formrender/js/formeo.min.js' %}"></script>
+<script type="text/javascript" src="{% static '/formrender/js/demo.js' %}"></script>
 {% endblock %}
+
+
+</html>

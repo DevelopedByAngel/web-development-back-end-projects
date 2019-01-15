@@ -1,5 +1,3 @@
-
-
 let renderContainer = document.querySelector('#formeo-editor');
 let goHomeBtn = document.getElementById('goHomeBtn');
 

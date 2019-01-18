@@ -16,18 +16,29 @@
     <form class="build-form clearfix"></form>
     <div id="pop-window">
         <div id="popup-options">
-            <form id="popup-form" action="">
-                <p id="pop-title">Insert Options Here</p>
+            <div id="popup-form">
+                <p class="pop-title">Insert Options Here</p>
                 <hr>
                 <p id="pop-instruct">Enter each option choice on a separate line. </p>
                 <textarea name="options" id="pop-textarea" cols="30" rows="10"></textarea>
-                <a id="load-from-datagbase" onclick="">Load from database</a>
+                <button id="load-options">Load Saved Options</button>
+                <button id="bulk-update" class="bulk-button">Update</button>
+                <input type="text" id="options-name" name="options_name" placeholder=" Insert options name(required)">
+                <button id="bulk-save" class="bulk-button">Update & Save Options</button>
+                <button id="bulk-cancel" class="bulk-button">Cancel</button>
+            </div>
 
-                <a id="bulk-submit" onclick="uploadOptions()">Update</a>
-                <a id="bulk-submit" onclick="uploadOptions()">Update & Save</a>
-                <a id="bulk-cancel" onclick="popHide()">Cancel</a>
 
-            </form>
+        </div>
+        <div id="pop-load-options">
+            <div class="popup-load-area">
+                <p class="pop-title">Select Option To Be Loaded</p>
+                <hr>
+                <table id="table-options">
+
+                </table>
+
+            </div>
         </div>
     </div>
     <div id="render-area" class="render-form"></div>
@@ -37,6 +48,13 @@
     <button id="renderForm" class="btn btn-default">Preview Form</button>
     <button id="viewData" class="btn btn-default">console.log Data</button>
     <button id="reloadBtn" class="btn btn-default">Reset Editor</button>
+</div>
+
+<div id="pop-load-options">
+    <table id="table-options">
+
+    </table>
+    salkdjlsdjflksdjflksdjflksdjflksdjfjlsjldjflkjslfjsdlfj
 </div>
 
 <footer id="demo-footer">

@@ -26,6 +26,11 @@ class SavedSelectData(models.Model):
     #foreign key linking to original saved form data 
     saved_form_data = models.ForeignKey(SavedFormData, on_delete=models.CASCADE)
 
+class SavedOptionsData(models.Model):
+    options_name = models.CharField(max_length=15)
+    options_data = models.TextField()
+
+
 
 
 

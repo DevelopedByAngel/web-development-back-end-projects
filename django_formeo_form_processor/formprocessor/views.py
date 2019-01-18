@@ -1,14 +1,16 @@
 # FORM PROCESSOR VIEWS 
 from django.views.generic import TemplateView
-from formprocessor.forms import PostForm
-from formprocessor.models import SavedFormData, SavedCheckboxData, SavedSelectData
-from django.http import HttpResponseRedirect
+from formprocessor.forms import PostForm, OptionsForm
+from formprocessor.models import SavedFormData, SavedCheckboxData, SavedSelectData, SavedOptionsData
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.shortcuts import render
 from django.template import loader
 import json 
+from django.core import serializers
 
-
+# ----------------------------------------------------------------------------------
+#VIEW FOR FORM CREATION. HANDLES SAVING OF FORM
 class FormDragPage(TemplateView):
     template_name = 'formprocessor/formprocessor.html'
 
@@ -17,6 +19,8 @@ class FormDragPage(TemplateView):
         if request.method == "POST":       
 
             form = PostForm(request.POST)
+
+            print(request.POST.get('form_data',''))
             
             if form.is_valid():
                 form_name = request.POST.get('form_name','')
@@ -55,9 +59,65 @@ class FormDragPage(TemplateView):
                 template = loader.get_template("index.html")                
                
                 return HttpResponseRedirect(reverse("index"))
-                       
+
+                #   form not valid
             else:
                 form = SavedFormData()
 
            
             return render(request, "formprocessor/failtoupload.html")
+
+
+# -----------------------------------------------------------------------------------
+# VIEW WHICH HANDLES THE SAVING OF OPTIONS
+def save_options(request):
+
+    if request.method == "POST":
+        form = OptionsForm(request.POST)       
+            
+        if form.is_valid():                 
+            options_name = request.POST.get('options_name','')            
+            options_data = request.POST.get('options_data','')           
+
+            # save to database
+            options_data_obj = SavedOptionsData(options_name= options_name, options_data= options_data)
+            options_data_obj.save()
+            
+            # fetching no httpresponse. This is not to redirect to another page
+            return HttpResponse()
+
+        else:
+            form = SavedOptionsData()
+
+        # fetching no httpresponse. This is not to redirect to another page
+        return HttpResponse()
+
+# -----------------------------------------------------------------------------------
+# VIEW WHICH HANDLES REQUEST FOR LIST OF OPTIONS
+def request_options(request):
+    print('request on')
+    #  need to serialize as type is queryset. 
+    saved_options = serializers.serialize('json',list(SavedOptionsData.objects.all()))
+
+    
+
+    # saved_options = json.dumps(SavedOptionsData.objects.all())
+    
+    print(saved_options)
+    # print(type(saved_options))
+    # <class 'django.db.models.query.QuerySet'>
+
+    # return HttpResponse({'mystring': saved_options})
+    return HttpResponse(json.dumps({'mystring': saved_options}))
+    
+
+
+ 
+
+
+           
+
+
+
+    
+

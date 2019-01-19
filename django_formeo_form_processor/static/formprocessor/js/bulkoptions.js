@@ -1,4 +1,8 @@
-let options
+
+
+
+
+
 
 
 //Function to Hide Popup
@@ -93,6 +97,10 @@ const uploadOptions = (save) => {
     }
     // close pop-up
     popHide()
+
+    // clear input text area
+    document.getElementById("pop-textarea").value = ""
+    document.getElementById("options-name").value = ""
 }
 
 // --------------------------------------------------------
@@ -112,7 +120,7 @@ const saveOptions = () => {
 // --------------------------------------------------------------------------------------
 // Function fohttps://stackoverflow.com/questions/16790375/django-object-is-not-json-serializabler loading saved options in database 
 
-
+let options
 
 const loadOptions = () => {
 
@@ -178,6 +186,12 @@ const pasteOptions = (num) => {
 
 
 }
+// --------------------------------------------------------------------------------------
+// Cancel Bulk upload
+
+const optionsCancel = () => {
+    document.getElementById('pop-load-options').style.display = "none"
+}
 
 
 
@@ -187,3 +201,4 @@ document.getElementById("load-options").addEventListener("click", loadOptions)
 document.getElementById("bulk-update").addEventListener("click", uploadOptions)
 document.getElementById("bulk-save").addEventListener("click", saveOptions)
 document.getElementById("bulk-cancel").addEventListener("click", popHide)
+document.getElementById("options-cancel").addEventListener("click", optionsCancel)

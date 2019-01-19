@@ -171,7 +171,7 @@ h3{
   font-size: 20px;
 }
 
-.home-table, th, td {
+.home-table th,td {
   border: 3px solid black;
   border-collapse: collapse;
 }
@@ -186,10 +186,7 @@ h3{
   
 }
 
-/* CSS FOR BUTTON */
-/* .hidden{
-  visibility: hidden;
-} */
+
 
 /* ---------------------------------------------- */
 /* BULK OPTIONS POP UP */
@@ -302,7 +299,7 @@ hr {
 
 #pop-load-options {
   position:absolute;
-  left:40%;
+  left:50%;
   top:17%;
   margin-left:-202px;
   font-family:'Raleway',sans-serif;
@@ -310,14 +307,44 @@ hr {
   }
 
 .popup-load-area {
-  max-width:800px;
-  min-width:750px;
-
-  min-height: 500px;
+  max-width:400px;
+  min-width:350px;
+  min-height: 400px;
   padding:10px 50px;
   border:2px solid gray;
   border-radius:10px;
   font-family:raleway;
   background-color:#fff;
   text-align:center;
+  font-size: 20px;
   }
+
+  #table-options td {
+    border: none;
+    border-collapse: collapse;
+    width: 200px;
+  }
+  
+  #table-options{
+    margin-left:auto; 
+    margin-right:auto;
+  }  
+
+  #options-cancel { 
+    background-color:#ff3300;
+    margin-top: 5px;
+    border:1px solid #ff3300;
+    
+  }
+
+  /* CSS FOR BUTTON */
+
+
+.show{
+  visibility: visible;
+}
+.hide{
+  display: none
+}
+
+ 

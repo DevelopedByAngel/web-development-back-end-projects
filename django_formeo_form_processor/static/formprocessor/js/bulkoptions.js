@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 //Function to Hide Popup
 const popHide = () => {
     document.getElementById('pop-window').style.display = "none";
@@ -28,10 +21,10 @@ const uploadOptions = (save) => {
     let optionList = insertedOptions.split("\n")
 
     // get the add option button
-    let addOptionButton = document.getElementById(currentIdEdit).getElementsByClassName("add-options")[1]
+    let addOptionButton = document.getElementById(currentIdEdit).getElementsByClassName("add-options")[0]
     // let optionInput = document.getElementById(currentIdEdit).getElementsByClassName("f-input-group")
 
-    // create events to trigger formeo events.
+    // create events to trigger formeo events
     let changeEvent = new Event('change');
     let clickEvent = new Event('click');
 

@@ -1,0 +1,15 @@
+{% if latest_question_list %}
+<ul>
+    {% for question in latest_question_list %}
+    <!-- don't use hardcoded links as challenging to change on projects with lot of templates -->
+    <!-- <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li> -->
+    <!-- <li><a href="{% url 'detail'  question.id%}">{{ question.question_text }}</a></li> -->
+
+    <!-- this employs a namespaced detail view which differentiate from other apps -->
+    <li><a href="{% url 'polls:detail' question.id%}">{{ question.question_text }}</a></li>
+
+    {% endfor %}
+</ul>
+{% else %}
+<p>No polls are available.</p>
+{% endif %}

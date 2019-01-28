@@ -7,6 +7,7 @@ from .models import Question, Choice
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
+from django.utils import timezone
 
 
 # FOR GENERIC VIEWS
@@ -16,11 +17,14 @@ class IndexView(generic.ListView):
     # here the default variable name provided to the template is question_list to override: 
     context_object_name = 'latest_question_list'
 
-
-
     def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by('-pub_date')[:5]
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        return Question.objects.filter(
+            pub_date__lte=timezone.now()
+        ).order_by('-pub_date')[:5]
 
 
 class DetailView(generic.DetailView):
@@ -28,6 +32,12 @@ class DetailView(generic.DetailView):
     template_name = 'polls/detail.html'
 
     # since the model is Question it automatically provides the variable name question to the template.
+
+    def get_queryset(self):
+        """
+        Excludes any questions that aren't published yet.
+        """
+        return Question.objects.filter(pub_date__lte=timezone.now())
 
 
 class ResultsView(generic.DetailView):
